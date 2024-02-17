@@ -3,36 +3,25 @@ package edu.java.bot.service;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.command.Command;
-import edu.java.bot.service.command.Hello;
-import edu.java.bot.service.command.Help;
-import edu.java.bot.service.command.List;
-import edu.java.bot.service.command.Track;
-import edu.java.bot.service.command.Untrack;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static edu.java.bot.service.command.Command.availableCommands;
 
 public class UserMessageProcessor {
-    public static java.util.List<? extends Command> commands() {
-        return java.util.List.of(
-            new Help(),
-            new Hello(),
-            new Track(),
-            new Untrack(),
-            new List()
-        );
-    }
-
     private static final Map<String, Command> NAME_TO_CMD = new HashMap<>();
 
     static {
-        for (var cmd : commands()) {
+        for (Command cmd : availableCommands()) {
             NAME_TO_CMD.put(cmd.command(), cmd);
         }
     }
 
-    private static final Pattern FIRST_WORD_PATTERN = Pattern.compile("^\\s*/(\\w+)");
+    private UserMessageProcessor() {
+    }
+
+    private static final Pattern COMMAND_PATTERN = Pattern.compile("^/(\\w+)");
     private static final String COMMAND_NOT_FOUND = "Command not found. Use /help.";
 
     public static SendMessage process(Update update) {
@@ -58,7 +47,7 @@ public class UserMessageProcessor {
             return null;
         }
 
-        Matcher matcher = FIRST_WORD_PATTERN.matcher(text);
+        Matcher matcher = COMMAND_PATTERN.matcher(text);
 
         if (matcher.find()) {
             return matcher.group(1);

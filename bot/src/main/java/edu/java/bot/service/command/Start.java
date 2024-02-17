@@ -3,23 +3,23 @@ package edu.java.bot.service.command;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 
-public class Untrack extends Command {
-    private static final String SUCCESSFUL_MESSAGE = "Link tracking has been discontinued.";
-    private static final String UNSUCCESSFUL_MESSAGE = "Failed to stop tracking.";
+public class Start extends Command {
+    private static final String SUCCESSFUL_MESSAGE = "The user has been successfully registered.";
+    private static final String UNSUCCESSFUL_MESSAGE = "User registration failed.";
 
     @Override
     public String command() {
-        return "untrack";
+        return "start";
     }
 
     @Override
     public String description() {
-        return "stop tracking the link";
+        return "registering a new user";
     }
 
     @Override
     public SendMessage handle(Update update) {
-        //untrack logic
+        //start logic
         boolean success = true;
 
         long chatId = update.message().chat().id();

@@ -13,17 +13,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class BotApplication implements CommandLineRunner {
     @Autowired
     private ApplicationConfig applicationConfig;
+
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        String token = applicationConfig.telegramToken();
-
-        System.out.println(token);
-
-        Botik bot = new Botik(token);
+    public void run(String... args) {
+        Botik bot = new Botik(applicationConfig);
 
         bot.start();
     }

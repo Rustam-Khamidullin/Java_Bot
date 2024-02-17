@@ -1,9 +1,7 @@
-package edu.java.bot;
+package edu.java.bot.service;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.service.UserMessageProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TestUserMessageProcessor {
+class UserMessageProcessorTest {
     static Update update;
     static Message message;
 
@@ -38,7 +36,7 @@ class TestUserMessageProcessor {
             Assertions.assertEquals("help", method.invoke(UserMessageProcessor.class, update));
 
             when(message.text()).thenReturn(" /help");
-            Assertions.assertEquals("help", method.invoke(UserMessageProcessor.class, update));
+            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
 
             when(message.text()).thenReturn("/");
             Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));

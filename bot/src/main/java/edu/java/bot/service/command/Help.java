@@ -2,9 +2,8 @@ package edu.java.bot.service.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import static edu.java.bot.service.UserMessageProcessor.commands;
 
-public class Help implements Command {
+public class Help extends Command {
     @Override
     public String command() {
         return "help";
@@ -19,12 +18,18 @@ public class Help implements Command {
     public SendMessage handle(Update update) {
         long chatId = update.message().chat().id();
 
+        String answer = generateAnswer();
+
+        return new SendMessage(chatId, answer);
+    }
+
+    private static String generateAnswer() {
         StringBuilder answer = new StringBuilder("List of commands:\n");
 
-        for (var cmd : commands()) {
+        for (var cmd : availableCommands()) {
             answer.append("/").append(cmd.command()).append(" - ").append(cmd.description()).append("\n");
         }
 
-        return new SendMessage(chatId, answer.toString());
+        return answer.toString();
     }
 }

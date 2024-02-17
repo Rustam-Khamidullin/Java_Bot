@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.util.ArrayList;
 
-public class List implements Command {
+public class List extends Command {
     @Override
     public String command() {
         return "list";
@@ -18,18 +18,23 @@ public class List implements Command {
     @Override
     public SendMessage handle(Update update) {
         //list logic
-        java.util.List<String> list = new ArrayList();
+        java.util.List<String> links = new ArrayList<>();
 
         long chatId = update.message().chat().id();
-        StringBuilder answer;
-        if (list.isEmpty()) {
-            answer = new StringBuilder("There are no tracked links");
-        } else {
-            answer = new StringBuilder("List of links:\n");
-            for (var link : list) {
-                answer.append(link).append("\n");
-            }
+        String answer = generateAnswer(links);
+
+        return new SendMessage(chatId, answer);
+    }
+
+    private String generateAnswer(java.util.List<String> links) {
+        if (links.isEmpty()) {
+            return "There is no tracking links.";
         }
-        return new SendMessage(chatId, answer.toString());
+        StringBuilder answer = new StringBuilder("Tracking links:\n");
+        for (var link : links) {
+            answer.append(link).append("\n");
+        }
+
+        return answer.toString();
     }
 }
