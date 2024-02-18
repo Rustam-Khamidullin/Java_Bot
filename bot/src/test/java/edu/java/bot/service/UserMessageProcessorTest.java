@@ -1,59 +1,40 @@
 package edu.java.bot.service;
 
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.Update;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import java.lang.reflect.Method;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static edu.java.bot.service.UserMessageProcessor.parseTelegramCommandArgument;
+import static edu.java.bot.service.UserMessageProcessor.parseTelegramCommandName;
 
-@ExtendWith(MockitoExtension.class)
 class UserMessageProcessorTest {
-    static Update update;
-    static Message message;
+    @Test
+    void parseTelegramCommandNameTest() {
+        Assertions.assertEquals("command", parseTelegramCommandName("/command some text"));
 
-    @BeforeAll
-    static void setup() {
-        update = mock(Update.class);
-        message = mock(Message.class);
-        when(update.message()).thenReturn(message);
+        Assertions.assertEquals("help", parseTelegramCommandName("/help"));
+
+        Assertions.assertNull(parseTelegramCommandName(" /help"));
+
+        Assertions.assertNull(parseTelegramCommandName("/"));
+
+        Assertions.assertNull(parseTelegramCommandName(""));
+
+        Assertions.assertNull(parseTelegramCommandName(null));
+
+        Assertions.assertNull(parseTelegramCommandName("help"));
+
+        Assertions.assertNull(parseTelegramCommandName(" something /help"));
     }
 
     @Test
-    void parseCommandNameTest() {
-        try {
-            Method method = UserMessageProcessor.class.getDeclaredMethod("parseCommandName", Update.class);
-            method.setAccessible(true);
+    void parseTelegramCommandArgumentTest() {
+        Assertions.assertEquals("some text", parseTelegramCommandArgument("/command some text"));
 
-            when(message.text()).thenReturn("/command some text");
-            Assertions.assertEquals("command", method.invoke(UserMessageProcessor.class, update));
+        Assertions.assertEquals("some text", parseTelegramCommandArgument("/command               some text"));
 
-            when(message.text()).thenReturn("/help");
-            Assertions.assertEquals("help", method.invoke(UserMessageProcessor.class, update));
+        Assertions.assertEquals("some  text", parseTelegramCommandArgument("/command               some  text"));
 
-            when(message.text()).thenReturn(" /help");
-            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
+        Assertions.assertNull(parseTelegramCommandArgument("/help"));
 
-            when(message.text()).thenReturn("/");
-            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
-
-            when(message.text()).thenReturn("");
-            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
-
-            when(message.text()).thenReturn(null);
-            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
-
-            when(message.text()).thenReturn("help");
-            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
-
-            when(message.text()).thenReturn(" something /help");
-            Assertions.assertNull(method.invoke(UserMessageProcessor.class, update));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Assertions.assertNull(parseTelegramCommandArgument(" something /help"));
     }
 }

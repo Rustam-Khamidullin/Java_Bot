@@ -23,10 +23,10 @@ public class Help extends Command {
         return new SendMessage(chatId, answer);
     }
 
-    private static String generateAnswer() {
+    private String generateAnswer() {
         StringBuilder answer = new StringBuilder("List of commands:\n");
 
-        for (var cmd : availableCommands()) {
+        for (var cmd : Command.availableCommands()) {
             answer.append("/").append(cmd.command()).append(" - ").append(cmd.description()).append("\n");
         }
 

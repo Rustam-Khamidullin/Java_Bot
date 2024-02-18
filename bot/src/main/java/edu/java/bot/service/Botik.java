@@ -2,22 +2,22 @@ package edu.java.bot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
-import com.pengrad.telegrambot.response.SendResponse;
 import edu.java.bot.configuration.ApplicationConfig;
-import static edu.java.bot.service.UserMessageProcessor.process;
+import edu.java.bot.service.command.Command;
 
 public class Botik {
-    final TelegramBot bot;
-    final String token;
+    private final TelegramBot bot;
 
     public Botik(ApplicationConfig config) {
-
-        this.token = config.telegramToken();
+        String token = config.telegramToken();
 
         this.bot = new TelegramBot.Builder(token).debug().build();
+        bot.execute(new SetMyCommands(Command.getListApiCommands().toArray(new BotCommand[0])));
     }
 
     public <T extends BaseRequest<T, R>, R extends BaseResponse> void execute(BaseRequest<T, R> request) {
@@ -27,9 +27,9 @@ public class Botik {
     public void start() {
         bot.setUpdatesListener(updates -> {
             for (var update : updates) {
-                SendMessage sendMessage = process(update);
+                SendMessage sendMessage = UserMessageProcessor.process(update);
 
-                SendResponse response = bot.execute(sendMessage);
+                bot.execute(sendMessage);
             }
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });

@@ -5,14 +5,23 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 
 public abstract class Command {
-    public static java.util.List<Command> availableCommands() {
-        return java.util.List.of(
+    private static final java.util.List<Command> COMMANDS =
+        java.util.List.of(
             new Start(),
             new Help(),
             new Track(),
             new Untrack(),
             new List()
         );
+
+    public static java.util.List<BotCommand> getListApiCommands() {
+        return COMMANDS.stream()
+            .map(cmd -> new BotCommand("/" + cmd.command(), cmd.description()))
+            .toList();
+    }
+
+    public static java.util.List<Command> availableCommands() {
+        return COMMANDS;
     }
 
     abstract public String command();
@@ -21,7 +30,4 @@ public abstract class Command {
 
     abstract public SendMessage handle(Update update);
 
-    BotCommand toApiCommand() {
-        return new BotCommand(command(), description());
-    }
 }
