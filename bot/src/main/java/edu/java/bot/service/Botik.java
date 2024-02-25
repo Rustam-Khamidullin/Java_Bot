@@ -1,6 +1,7 @@
 package edu.java.bot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.request.BaseRequest;
@@ -27,9 +28,14 @@ public class Botik {
     public void start() {
         bot.setUpdatesListener(updates -> {
             for (var update : updates) {
-                SendMessage sendMessage = UserMessageProcessor.process(update);
-
-                bot.execute(sendMessage);
+                if (update == null) {
+                    continue;
+                }
+                try {
+                    SendMessage sendMessage = UserMessageProcessor.process(update);
+                    bot.execute(sendMessage);
+                } catch (TelegramException ignored) {
+                }
             }
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });

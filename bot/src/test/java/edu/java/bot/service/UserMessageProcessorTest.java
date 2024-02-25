@@ -3,38 +3,29 @@ package edu.java.bot.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static edu.java.bot.service.UserMessageProcessor.parseTelegramCommandArgument;
-import static edu.java.bot.service.UserMessageProcessor.parseTelegramCommandName;
 
 class UserMessageProcessorTest {
     @Test
     void parseTelegramCommandNameTest() {
-        Assertions.assertEquals("command", parseTelegramCommandName("/command some text"));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument("/command", "some text"),
+            parseTelegramCommandArgument("/command some text"));
 
-        Assertions.assertEquals("help", parseTelegramCommandName("/help"));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument("/help", null),
+            parseTelegramCommandArgument("/help"));
 
-        Assertions.assertNull(parseTelegramCommandName(" /help"));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument("/help", "a a a     "),
+            parseTelegramCommandArgument("/help a a a     "));
 
-        Assertions.assertNull(parseTelegramCommandName("/"));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument(null, null),
+            parseTelegramCommandArgument(" /help"));
 
-        Assertions.assertNull(parseTelegramCommandName(""));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument(null, null),
+            parseTelegramCommandArgument(""));
 
-        Assertions.assertNull(parseTelegramCommandName(null));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument(null, null),
+            parseTelegramCommandArgument("help"));
 
-        Assertions.assertNull(parseTelegramCommandName("help"));
-
-        Assertions.assertNull(parseTelegramCommandName(" something /help"));
-    }
-
-    @Test
-    void parseTelegramCommandArgumentTest() {
-        Assertions.assertEquals("some text", parseTelegramCommandArgument("/command some text"));
-
-        Assertions.assertEquals("some text", parseTelegramCommandArgument("/command               some text"));
-
-        Assertions.assertEquals("some  text", parseTelegramCommandArgument("/command               some  text"));
-
-        Assertions.assertNull(parseTelegramCommandArgument("/help"));
-
-        Assertions.assertNull(parseTelegramCommandArgument(" something /help"));
+        Assertions.assertEquals(new UserMessageProcessor.CommandArgument(null, null),
+            parseTelegramCommandArgument(" something /help"));
     }
 }

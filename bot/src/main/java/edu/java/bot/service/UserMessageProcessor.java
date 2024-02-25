@@ -1,5 +1,6 @@
 package edu.java.bot.service;
 
+import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.command.Command;
@@ -11,7 +12,7 @@ public class UserMessageProcessor {
 
     static {
         for (Command cmd : Command.availableCommands()) {
-            NAME_TO_CMD.put(cmd.command(), cmd);
+            NAME_TO_CMD.put("/" + cmd.command(), cmd);
         }
     }
 
@@ -20,13 +21,17 @@ public class UserMessageProcessor {
 
     private static final String COMMAND_NOT_FOUND = "Command not found. Use /help.";
 
-    public static SendMessage process(Update update) {
-        if (update == null) {
-            throw new NullPointerException();
+    public static SendMessage process(Update update) throws TelegramException {
+        String text;
+        long chatId;
+        try {
+            text = update.message().text();
+            chatId = update.message().chat().id();
+        } catch (RuntimeException e) {
+            throw new TelegramException(e);
         }
 
-        String cmdName = parseTelegramCommandName(update.message().text());
-        long chatId = update.message().chat().id();
+        String cmdName = parseTelegramCommandArgument(text).command;
 
         Command command = NAME_TO_CMD.getOrDefault(cmdName, null);
 
@@ -36,37 +41,24 @@ public class UserMessageProcessor {
         return command.handle(update);
     }
 
-    public static String parseTelegramCommandName(String message) {
-        if (message == null || !message.startsWith("/")) {
-            return null;
+    public static CommandArgument parseTelegramCommandArgument(String text) {
+        if (!text.startsWith("/")) {
+            return new CommandArgument(null, null);
         }
 
-        int commandEndIndex = message.indexOf(' ', 1);
-        String stringCommand;
-        if (commandEndIndex == -1) {
-            stringCommand = message.substring(1);
-        } else {
-            stringCommand = message.substring(1, commandEndIndex);
+        String[] parts = text.split("\\s+", 2);
+
+        if (parts.length == 0) {
+            return new CommandArgument(null, null);
         }
 
-        if (stringCommand.length() <= 1) {
-            return null;
+        if (parts.length == 1) {
+            return new CommandArgument(parts[0], null);
         }
 
-        return stringCommand;
+        return new CommandArgument(parts[0], parts[1]);
     }
 
-    public static String parseTelegramCommandArgument(String message) {
-        if (message == null || !message.startsWith("/")) {
-            return null;
-        }
-
-        String[] parts = message.split("\\s+", 2);
-
-        if (parts.length != 2 || parts[1].isBlank()) {
-            return null;
-        }
-
-        return parts[1];
+    public record CommandArgument(String command, String argument) {
     }
 }
