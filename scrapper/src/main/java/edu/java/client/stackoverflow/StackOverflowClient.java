@@ -1,8 +1,8 @@
 package edu.java.client.stackoverflow;
 
-import edu.java.dto.stackoverflow.Question;
-import org.springframework.web.client.RestClient;
+import edu.java.dto.stackoverflow.Questions;
+import org.springframework.http.ResponseEntity;
 
 public interface StackOverflowClient {
-    Question getQuestion(int id);
+    ResponseEntity<Questions> getQuestions(int id);
 }

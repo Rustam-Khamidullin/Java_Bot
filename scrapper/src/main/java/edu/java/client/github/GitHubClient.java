@@ -1,7 +1,8 @@
 package edu.java.client.github;
 
 import edu.java.dto.github.Repository;
+import org.springframework.http.ResponseEntity;
 
 public interface GitHubClient {
-    Repository getRepository(String owner, String repository);
+    ResponseEntity<Repository> getRepository(String owner, String repository);
 }

@@ -3,48 +3,134 @@ package edu.java.scrapper.client.github;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import edu.java.client.github.GitHubRestClient;
 import edu.java.dto.github.Repository;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.Assert.assertEquals;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import java.time.OffsetDateTime;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-@SpringBootTest
 public class GitHubRestClientTest {
-    private WireMockServer wireMockServer;
+    static private WireMockServer wireMockServer;
+    static private GitHubRestClient gitHubRestClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        wireMockServer = new WireMockServer();
+        wireMockServer = new WireMockServer(35234);
         wireMockServer.start();
+
+        gitHubRestClient = new GitHubRestClient("http://localhost:" + wireMockServer.port());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         wireMockServer.stop();
     }
 
     @Test
     public void testGetRepository() {
-        // Set up WireMock to mock the GitHub API response
         String owner = "testOwner";
         String repository = "testRepository";
+        int id = 754063270;
+        OffsetDateTime updated_at = OffsetDateTime.parse("2024-02-07T10:29:17Z");
+        OffsetDateTime pushed_at = OffsetDateTime.parse("2024-02-25T10:08:03Z");
+
         String apiUrl = String.format("/repos/%s/%s", owner, repository);
+
         wireMockServer.stubFor(get(urlEqualTo(apiUrl))
             .willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
-                .withBody("{\"name\": \"TestRepo\", \"owner\": {\"login\": \"testOwner\"}}")));
+                .withStatus(200)
+                .withBody(
+                    "{\n" +
+                        "    \"id\": 754063270,\n" +
+                        "    \"node_id\": \"R_kgDOLPIXpg\",\n" +
+                        "    \"name\": \"Java_Bot\",\n" +
+                        "    \"full_name\": \"Rustam-Khamidullin/Java_Bot\",\n" +
+                        "    \"private\": false,\n" +
+                        "    \"html_url\": \"https://github.com/Rustam-Khamidullin/Java_Bot\",\n" +
+                        "    \"description\": null,\n" +
+                        "    \"fork\": false,\n" +
+                        "    \"created_at\": \"2024-02-07T10:28:03Z\",\n" +
+                        "    \"updated_at\": \"2024-02-07T10:29:17Z\",\n" +
+                        "    \"pushed_at\": \"2024-02-25T10:08:03Z\"\n" +
+                        "}"
+                )));
 
-        // Create the GitHubRestClient with the WireMock server base URL
-        GitHubRestClient gitHubRestClient = new GitHubRestClient("http://localhost:" + wireMockServer.port());
+        ResponseEntity<Repository> responseEntityRepositoryResult = gitHubRestClient.getRepository(owner, repository);
 
-        // Perform the test
-        Repository repositoryResult = gitHubRestClient.getRepository(owner, repository);
+        Assertions.assertTrue(responseEntityRepositoryResult.getStatusCode().is2xxSuccessful());
+        Assertions.assertTrue(responseEntityRepositoryResult.hasBody());
 
-        // Verify the result
-        assertEquals("TestRepo", repositoryResult.id());
-        assertEquals("testOwner", repositoryResult.pushed_at());
-        assertEquals("testOwner", repositoryResult.updated_at());
+        var repositoryResult = responseEntityRepositoryResult.getBody();
+
+        Assertions.assertEquals(id, repositoryResult.id());
+        Assertions.assertEquals(pushed_at, repositoryResult.pushedAt());
+        Assertions.assertEquals(updated_at, repositoryResult.updatedAt());
+    }
+
+    @Test
+    public void testGetRepositoryEmpty() {
+        String owner = "testOwner";
+        String repository = "testRepository";
+
+        String apiUrl = String.format("/repos/%s/%s", owner, repository);
+
+        wireMockServer.stubFor(get(urlEqualTo(apiUrl))
+            .willReturn(aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withStatus(200)
+                .withBody("{}")));
+
+        ResponseEntity<Repository> responseEntityRepositoryResult = gitHubRestClient.getRepository(owner, repository);
+
+        Assertions.assertTrue(responseEntityRepositoryResult.getStatusCode().is2xxSuccessful());
+        Assertions.assertTrue(responseEntityRepositoryResult.hasBody());
+
+        var repositoryResult = responseEntityRepositoryResult.getBody();
+
+        Assertions.assertNull(repositoryResult.pushedAt());
+        Assertions.assertNull(repositoryResult.updatedAt());
+    }
+
+    @Test
+    public void testGetRepositoryWithoutBody() {
+        String owner = "testOwner";
+        String repository = "testRepository";
+
+        String apiUrl = String.format("/repos/%s/%s", owner, repository);
+
+        wireMockServer.stubFor(get(urlEqualTo(apiUrl))
+            .willReturn(aResponse()
+                .withHeader("Content-Type", "application/json")
+            ));
+
+        ResponseEntity<Repository> responseEntityRepositoryResult = gitHubRestClient.getRepository(owner, repository);
+
+        Assertions.assertTrue(responseEntityRepositoryResult.getStatusCode().is2xxSuccessful());
+        Assertions.assertFalse(responseEntityRepositoryResult.hasBody());
+    }
+
+    @Test
+    public void testGetRepositoryWithoutBadCode() {
+        String owner = "testOwner";
+        String repository = "testRepository";
+
+        String apiUrl = String.format("/repos/%s/%s", owner, repository);
+
+        wireMockServer.stubFor(get(urlEqualTo(apiUrl))
+            .willReturn(aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withStatus(404)
+                .withBody("{}")
+            ));
+
+        Assertions.assertThrows(HttpClientErrorException.class, () ->
+            gitHubRestClient.getRepository(owner, repository));
+
     }
 }

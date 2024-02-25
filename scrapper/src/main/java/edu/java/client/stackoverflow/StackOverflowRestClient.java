@@ -1,6 +1,7 @@
 package edu.java.client.stackoverflow;
 
-import edu.java.dto.stackoverflow.Question;
+import edu.java.dto.stackoverflow.Questions;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
 public class StackOverflowRestClient implements StackOverflowClient {
@@ -8,16 +9,17 @@ public class StackOverflowRestClient implements StackOverflowClient {
 
     public StackOverflowRestClient(String baseUrl) {
         restClient = RestClient.builder()
-            .baseUrl(baseUrl)
-            .build();
+                .baseUrl(baseUrl)
+                .defaultHeader("site", "stackoverflow")
+                .build();
     }
 
     @Override
-    public Question getQuestion(int id) {
+    public ResponseEntity<Questions> getQuestions(int id) {
         return restClient.get()
-            .uri("questions/%d".formatted(id))
-            .header("site", "stackoverflow")
-            .retrieve()
-            .body(Question.class);
+                .uri("/questions/%d".formatted(id))
+                .retrieve()
+                .toEntity(Questions.class);
+
     }
 }
