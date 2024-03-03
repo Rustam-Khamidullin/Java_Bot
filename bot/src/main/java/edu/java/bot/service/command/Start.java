@@ -9,12 +9,17 @@ public class Start extends Command {
 
     @Override
     public String command() {
-        return "start";
+        return "/start";
     }
 
     @Override
     public String description() {
         return "registering a new user";
+    }
+
+    @Override
+    public boolean isArgumentNecessary() {
+        return false;
     }
 
     @Override

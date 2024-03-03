@@ -38,6 +38,7 @@ public class StackOverflowRestClientTest {
         int id = 78056379;
         OffsetDateTime lastActivityDate = Instant.ofEpochSecond(1708872296L)
             .atOffset(ZoneOffset.ofHours(0));
+        long answerCount = 123;
 
         String apiUrl = "/questions/%d".formatted(id);
 
@@ -52,7 +53,7 @@ public class StackOverflowRestClientTest {
                         "    {\n" +
                         "      \"is_answered\": false,\n" +
                         "      \"view_count\": 6,\n" +
-                        "      \"answer_count\": 0,\n" +
+                        "      \"answer_count\": 123,\n" +
                         "      \"score\": 0,\n" +
                         "      \"last_activity_date\": 1708872296,\n" +
                         "      \"creation_date\": 1708872296,\n" +
@@ -77,6 +78,7 @@ public class StackOverflowRestClientTest {
 
         Assertions.assertEquals(id, questionResult.items().getFirst().id());
         Assertions.assertEquals(lastActivityDate, questionResult.items().getFirst().lastActivityDate());
+        Assertions.assertEquals(answerCount, questionResult.items().getFirst().answerCount());
     }
 
     @Test

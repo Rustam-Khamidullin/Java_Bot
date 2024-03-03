@@ -1,25 +1,23 @@
 package edu.java.configuration;
 
-import edu.java.configuration.client.GitHubClientConfiguration;
-import edu.java.configuration.client.Scheduler;
-import edu.java.configuration.client.StackOverflowConfiguration;
+import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.validation.annotation.Validated;
 
-@EnableConfigurationProperties({
-    GitHubClientConfiguration.class,
-    StackOverflowConfiguration.class})
-@ConfigurationProperties(prefix = "app.scheduler")
-@RequiredArgsConstructor
+@Validated
+@ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
+@Data
 public class ApplicationConfiguration {
-    private final boolean enable;
-    private final Duration interval;
+    private final Scheduler scheduler;
 
     @Bean
-    Scheduler scheduler() {
-        return new Scheduler(enable, interval);
+    public Scheduler scheduler() {
+        return scheduler;
+    }
+
+    public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }
 }

@@ -27,9 +27,9 @@ public class HelpTest {
 
             Assertions.assertEquals(
                 "List of commands:\n"
-                    + "/" + help.command() + " - " + help.description() + "\n"
-                    + "/" + help.command() + " - " + help.description() + "\n"
-                    + "/" + help.command() + " - " + help.description() + "\n"
+                    + help.command() + " - " + help.description() + "\n"
+                    + help.command() + " - " + help.description() + "\n"
+                    + help.command() + " - " + help.description() + "\n"
                 , result);
         } catch (Exception e) {
             e.printStackTrace();

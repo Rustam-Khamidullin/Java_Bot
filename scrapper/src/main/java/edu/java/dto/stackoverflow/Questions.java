@@ -13,6 +13,8 @@ public record Questions(
     public record Item(
         @JsonProperty("question_id")
         long id,
+        @JsonProperty("answer_count")
+        long answerCount,
         @JsonProperty("last_activity_date")
         @JsonFormat(shape = JsonFormat.Shape.NUMBER)
         OffsetDateTime lastActivityDate
