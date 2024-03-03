@@ -1,8 +1,8 @@
 app:
   scheduler:
     enable: true
-    interval: 10s
-    force-check-delay: 10s
+    interval: 15000
+    force-check-delay: 15000
 
 spring:
   application:
@@ -10,11 +10,11 @@ spring:
 
 api:
   bot:
-    baseUrl: ${BOT_BASE_URL:[http://localhost:8090]}
+    baseUrl: ${BOT_BASE_URL:http://localhost:8090}
   github:
-    baseUrl: ${GITHUB_BASE_URL:[https://api.github.com]}
+    baseUrl: ${GITHUB_BASE_URL:https://api.github.com}
   stackoverflow:
-    baseUrl: ${STACKOVERFLOW_BASE_URL:[https://api.stackexchange.com/2.3]}
+    baseUrl: ${STACKOVERFLOW_BASE_URL:https://api.stackexchange.com/2.3}
 
 server:
   port: 8080
