@@ -1,6 +1,5 @@
 package edu.java.bot.service;
 
-import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.command.Command;
@@ -12,7 +11,7 @@ public class UserMessageProcessor {
 
     static {
         for (Command cmd : Command.availableCommands()) {
-            NAME_TO_CMD.put("/" + cmd.command(), cmd);
+            NAME_TO_CMD.put(cmd.command(), cmd);
         }
     }
 
@@ -20,24 +19,27 @@ public class UserMessageProcessor {
     }
 
     private static final String COMMAND_NOT_FOUND = "Command not found. Use /help.";
+    private static final String ARGUMENT_NOT_FOUND = "The command requires an argument";
 
-    public static SendMessage process(Update update) throws TelegramException {
-        String text;
-        long chatId;
-        try {
-            text = update.message().text();
-            chatId = update.message().chat().id();
-        } catch (RuntimeException e) {
-            throw new TelegramException(e);
-        }
+    public static SendMessage process(Update update) {
+        String text = update.message().text();
+        long chatId = update.message().chat().id();
 
-        String cmdName = parseTelegramCommandArgument(text).command;
+        CommandArgument commandArgument = parseTelegramCommandArgument(text);
 
+        String cmdName = commandArgument.command;
+        String argument = commandArgument.argument;
         Command command = NAME_TO_CMD.getOrDefault(cmdName, null);
 
         if (command == null) {
             return new SendMessage(chatId, COMMAND_NOT_FOUND);
         }
+
+        if (command.isArgumentNecessary() && argument == null) {
+            return new SendMessage(chatId, ARGUMENT_NOT_FOUND);
+        }
+
+        command.setArgument(argument);
         return command.handle(update);
     }
 

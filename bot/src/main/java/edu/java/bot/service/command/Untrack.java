@@ -9,12 +9,17 @@ public class Untrack extends Command {
 
     @Override
     public String command() {
-        return "untrack";
+        return "/untrack";
     }
 
     @Override
     public String description() {
         return "stop tracking the link";
+    }
+
+    @Override
+    public boolean isArgumentNecessary() {
+        return true;
     }
 
     @Override

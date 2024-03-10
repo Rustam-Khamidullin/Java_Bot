@@ -7,12 +7,17 @@ import java.util.ArrayList;
 public class List extends Command {
     @Override
     public String command() {
-        return "list";
+        return "/list";
     }
 
     @Override
     public String description() {
         return "list of tracking links";
+    }
+
+    @Override
+    public boolean isArgumentNecessary() {
+        return false;
     }
 
     @Override

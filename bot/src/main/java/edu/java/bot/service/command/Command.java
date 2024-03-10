@@ -14,9 +14,11 @@ public abstract class Command {
             new List()
         );
 
+    protected String argument = null;
+
     public static java.util.List<BotCommand> getListApiCommands() {
         return COMMANDS.stream()
-            .map(cmd -> new BotCommand("/" + cmd.command(), cmd.description()))
+            .map(cmd -> new BotCommand(cmd.command(), cmd.description()))
             .toList();
     }
 
@@ -24,9 +26,15 @@ public abstract class Command {
         return COMMANDS;
     }
 
+    public void setArgument(String argument) {
+        this.argument = argument;
+    }
+
     abstract public String command();
 
     abstract public String description();
+
+    abstract public boolean isArgumentNecessary();
 
     abstract public SendMessage handle(Update update);
 

@@ -6,12 +6,17 @@ import com.pengrad.telegrambot.request.SendMessage;
 public class Help extends Command {
     @Override
     public String command() {
-        return "help";
+        return "/help";
     }
 
     @Override
     public String description() {
         return "help command";
+    }
+
+    @Override
+    public boolean isArgumentNecessary() {
+        return false;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class Help extends Command {
         StringBuilder answer = new StringBuilder("List of commands:\n");
 
         for (var cmd : Command.availableCommands()) {
-            answer.append("/").append(cmd.command()).append(" - ").append(cmd.description()).append("\n");
+            answer.append(cmd.command()).append(" - ").append(cmd.description()).append("\n");
         }
 
         return answer.toString();
