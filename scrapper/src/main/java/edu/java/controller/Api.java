@@ -4,8 +4,8 @@ import edu.java.dto.api.request.AddLinkRequest;
 import edu.java.dto.api.request.RemoveLinkRequest;
 import edu.java.dto.api.response.LinkResponse;
 import edu.java.dto.api.response.ListLinksResponse;
-import edu.java.exception.api.BadRequestException;
 import edu.java.exception.api.NotFoundException;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.logging.Logger;
 import org.springframework.http.ResponseEntity;
@@ -19,45 +19,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class Api {
-    private static final String INVALID_ARGUMENT = "Некорректные параметры запроса";
     private final Logger logger = Logger.getLogger("ControllerApi");
 
     @PostMapping("/tg-chat/{id}")
     public ResponseEntity<?> registerChat(@PathVariable("id") Long id) {
-        boolean correct = id == 1;
-        if (!correct) {
-            throw new BadRequestException(null, INVALID_ARGUMENT);
-        }
+        logger.info("Чат %d зарегистрирован".formatted(id));
 
-        logger.info("Чат %d зарегистрирован" .formatted(id));
-
-        return ResponseEntity.ok().body("Чат зарегистрирован");
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/tg-chat/{id}")
     public ResponseEntity<?> deleteChat(@PathVariable("id") Long id) {
-        boolean correct = id == 1;
-        if (!correct) {
-            throw new BadRequestException(null, INVALID_ARGUMENT);
-        }
-
         boolean chatExist = true;
         if (!chatExist) {
-            throw new NotFoundException(null, "Чат не существует");
+            throw new NotFoundException("Чат не существует");
         }
 
-        logger.info("Чат %d успешно удалён" .formatted(id));
+        logger.info("Чат %d успешно удалён".formatted(id));
 
-        return ResponseEntity.ok().body("Чат успешно удалён");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/links")
     public ResponseEntity<ListLinksResponse> getAllLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId) {
-        boolean correct = tgChatId == 1;
-        if (!correct) {
-            throw new BadRequestException(null, INVALID_ARGUMENT);
-        }
-
         List<LinkResponse> links = List.of();
         ListLinksResponse response = new ListLinksResponse(links, links.size());
         logger.info("Отслеживаемые ссылки отправлены");
@@ -68,13 +52,8 @@ public class Api {
     @PostMapping("/links")
     public ResponseEntity<LinkResponse> addLink(
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
-        @RequestBody AddLinkRequest request
+        @RequestBody @Valid AddLinkRequest request
     ) {
-        boolean correct = tgChatId == 1;
-        if (!correct) {
-            throw new BadRequestException(null, INVALID_ARGUMENT);
-        }
-
         LinkResponse response = new LinkResponse(tgChatId, request.link());
         logger.info("Ссылка успешно добавлена");
 
@@ -84,16 +63,11 @@ public class Api {
     @DeleteMapping("/links")
     public ResponseEntity<LinkResponse> removeLink(
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
-        @RequestBody RemoveLinkRequest request
+        @RequestBody @Valid RemoveLinkRequest request
     ) {
-        boolean correct = tgChatId == 1;
-        if (!correct) {
-            throw new BadRequestException(null, INVALID_ARGUMENT);
-        }
-
         boolean linkExist = request.link().equals("string");
         if (!linkExist) {
-            throw new NotFoundException(null, "Ссылка не найдена");
+            throw new NotFoundException("Ссылка не найдена");
         }
 
         LinkResponse response = new LinkResponse(tgChatId, request.link());

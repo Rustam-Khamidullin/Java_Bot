@@ -1,6 +1,9 @@
 package edu.java.dto.api.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 
-public record RemoveLinkRequest(@JsonProperty("link") String link) {
+public record RemoveLinkRequest(
+    @Valid
+    String link
+) {
 }

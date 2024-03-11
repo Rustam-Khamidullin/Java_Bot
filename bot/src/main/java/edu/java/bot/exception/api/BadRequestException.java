@@ -1,13 +1,7 @@
 package edu.java.bot.exception.api;
 
-import lombok.Getter;
-
-@Getter
 public class BadRequestException extends RuntimeException {
-    private final String description;
-
-    public BadRequestException(String message, String description) {
+    public BadRequestException(String message) {
         super(message);
-        this.description = description;
     }
 }

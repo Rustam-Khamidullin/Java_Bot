@@ -1,7 +1,10 @@
 package edu.java.bot.dto.scrapper.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 
-public record AddLinkRequest(@JsonProperty("link") String link) {
+public record AddLinkRequest(
+    @NotBlank
+    String link
+) {
 }
 

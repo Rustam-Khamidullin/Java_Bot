@@ -5,11 +5,12 @@ import edu.java.bot.dto.scrapper.request.RemoveLinkRequest;
 import edu.java.bot.dto.scrapper.response.LinkResponse;
 import edu.java.bot.dto.scrapper.response.ListLinksResponse;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
-@SuppressWarnings("MultipleStringLiterals")
 public class ScrapperClient {
+    private static final String TG_CHAT_URL = "/tg-chat/%d";
+    private static final String LINKS_URL = "/links";
+    private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
     private final RestClient restClient;
 
     public ScrapperClient(String baseUrl) {
@@ -19,43 +20,41 @@ public class ScrapperClient {
             .build();
     }
 
-    public ResponseEntity<?> registerChat(long id) {
-        return restClient.post()
-            .uri("/tg-chat/%d" .formatted(id))
-            .retrieve()
-            .toBodilessEntity();
+    public void registerChat(long id) {
+        restClient.post()
+            .uri(TG_CHAT_URL.formatted(id))
+            .retrieve();
     }
 
-    public ResponseEntity<?> deleteChat(long id) {
-        return restClient.delete()
-            .uri("/tg-chat/%d" .formatted(id))
-            .retrieve()
-            .toBodilessEntity();
+    public void deleteChat(long id) {
+        restClient.delete()
+            .uri(TG_CHAT_URL.formatted(id))
+            .retrieve();
     }
 
-    public ResponseEntity<ListLinksResponse> getAllLinks(long tgChatId) {
+    public ListLinksResponse getAllLinks(long tgChatId) {
         return restClient.get()
-            .uri("/links")
-            .header("Tg-Chat-Id", String.valueOf(tgChatId))
+            .uri(LINKS_URL)
+            .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .retrieve()
-            .toEntity(ListLinksResponse.class);
+            .body(ListLinksResponse.class);
     }
 
-    public ResponseEntity<LinkResponse> addLink(long tgChatId, AddLinkRequest addLinkRequest) {
+    public LinkResponse addLink(long tgChatId, AddLinkRequest addLinkRequest) {
         return restClient.post()
-            .uri("/links")
-            .header("Tg-Chat-Id", String.valueOf(tgChatId))
+            .uri(LINKS_URL)
+            .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(addLinkRequest)
             .retrieve()
-            .toEntity(LinkResponse.class);
+            .body(LinkResponse.class);
     }
 
-    public ResponseEntity<LinkResponse> removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest) {
+    public LinkResponse removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest) {
         return restClient.method(HttpMethod.DELETE)
-            .uri("/links")
-            .header("Tg-Chat-Id", String.valueOf(tgChatId))
+            .uri(LINKS_URL)
+            .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(removeLinkRequest)
             .retrieve()
-            .toEntity(LinkResponse.class);
+            .body(LinkResponse.class);
     }
 }

@@ -3,48 +3,39 @@ package edu.java.controller;
 import edu.java.dto.bot.response.ApiErrorResponse;
 import edu.java.exception.api.BadRequestException;
 import edu.java.exception.api.NotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiErrorResponse> handleBadRequestException(BadRequestException e) {
-        ApiErrorResponse response = new ApiErrorResponse(
-            e.getDescription(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            e.getClass().getSimpleName(),
-            e.getMessage(),
-            getStackTaraceList(e)
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({
+        MethodArgumentNotValidException.class,
+        MethodArgumentTypeMismatchException.class,
+        BadRequestException.class})
+    public ResponseEntity<ApiErrorResponse> handleBadRequestException(Exception e) {
+        return handleException(e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleNotFoundException(NotFoundException e) {
-        ApiErrorResponse response = new ApiErrorResponse(
-            e.getDescription(),
-            HttpStatus.NOT_FOUND.getReasonPhrase(),
-            e.getClass().getSimpleName(),
-            e.getMessage(),
-            getStackTaraceList(e)
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiErrorResponse> handleNotFoundException(Exception e) {
+        return handleException(e, HttpStatus.NOT_FOUND);
     }
 
-    private static List<String> getStackTaraceList(Throwable e) {
-        var result = new ArrayList<String>();
-
-        for (var elem : e.getStackTrace()) {
-            result.add(elem.toString());
-        }
-
-        return result;
+    private ResponseEntity<ApiErrorResponse> handleException(Exception e, HttpStatus httpStatus) {
+        ApiErrorResponse response = new ApiErrorResponse(
+            httpStatus.getReasonPhrase(),
+            httpStatus.toString(),
+            e.getClass().getSimpleName(),
+            e.getMessage(),
+            Arrays.stream(e.getStackTrace())
+                .map(StackTraceElement::toString)
+                .toList()
+        );
+        return new ResponseEntity<>(response, httpStatus);
     }
 }

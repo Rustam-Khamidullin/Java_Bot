@@ -9,7 +9,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
@@ -51,9 +50,7 @@ class ScrapperClientTest {
                 .withStatus(200)
                 .withBody("Mocked Response")));
 
-        ResponseEntity<?> responseEntity = scrapperClient.registerChat(id);
-
-        Assertions.assertEquals(responseEntity.getStatusCode().value(), 200);
+        Assertions.assertDoesNotThrow(() -> scrapperClient.registerChat(id));
     }
 
     @Test
@@ -66,9 +63,8 @@ class ScrapperClientTest {
                 .withStatus(200)
                 .withBody("Mocked Response")));
 
-        ResponseEntity<?> responseEntity = scrapperClient.deleteChat(id);
 
-        Assertions.assertEquals(responseEntity.getStatusCode().value(), 200);
+        Assertions.assertDoesNotThrow(() -> scrapperClient.deleteChat(id));
     }
 
     @Test
@@ -87,11 +83,10 @@ class ScrapperClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(objectMapper.writeValueAsString(listLinksResponse))));
 
-        ResponseEntity<ListLinksResponse> responseEntity = scrapperClient.getAllLinks(789);
+        ListLinksResponse response = scrapperClient.getAllLinks(789);
 
-        Assertions.assertEquals(responseEntity.getStatusCode().value(), 200);
-        Assertions.assertEquals(responseEntity.getBody().size(), 3);
-        Assertions.assertIterableEquals(responseEntity.getBody().links(), linkResponses);
+        Assertions.assertEquals(response.size(), 3);
+        Assertions.assertIterableEquals(response.links(), linkResponses);
     }
 
     @Test
@@ -107,11 +102,9 @@ class ScrapperClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(objectMapper.writeValueAsString(linkResponse))));
 
+        LinkResponse response = scrapperClient.addLink(987, addLinkRequest);
 
-        ResponseEntity<LinkResponse> responseEntity = scrapperClient.addLink(987, addLinkRequest);
-
-        Assertions.assertEquals(responseEntity.getStatusCode().value(), 200);
-        Assertions.assertEquals(responseEntity.getBody(), linkResponse);
+        Assertions.assertEquals(response, linkResponse);
     }
 
     @Test
@@ -127,10 +120,8 @@ class ScrapperClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(objectMapper.writeValueAsString(linkResponse))));
 
-        ResponseEntity<LinkResponse> responseEntity = scrapperClient.removeLink(654, removeLinkRequest);
+        LinkResponse response = scrapperClient.removeLink(654, removeLinkRequest);
 
-
-        Assertions.assertEquals(responseEntity.getStatusCode().value(), 200);
-        Assertions.assertEquals(responseEntity.getBody(), linkResponse);
+        Assertions.assertEquals(response, linkResponse);
     }
 }
