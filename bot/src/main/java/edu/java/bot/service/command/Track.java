@@ -9,12 +9,17 @@ public class Track extends Command {
 
     @Override
     public String command() {
-        return "track";
+        return "/track";
     }
 
     @Override
     public String description() {
         return "start tracking a link";
+    }
+
+    @Override
+    public boolean isArgumentNecessary() {
+        return true;
     }
 
     @Override
