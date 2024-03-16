@@ -2,7 +2,7 @@ package edu.java.bot;
 
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.service.Botik;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,9 +10,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(ApplicationConfig.class)
+@RequiredArgsConstructor
 public class BotApplication implements CommandLineRunner {
-    @Autowired
-    private ApplicationConfig applicationConfig;
+    private final ApplicationConfig applicationConfig;
 
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);

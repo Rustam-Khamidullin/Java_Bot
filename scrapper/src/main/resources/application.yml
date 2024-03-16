@@ -9,6 +9,8 @@ spring:
     name: scrapper
 
 api:
+  bot:
+    baseUrl: ${BOT_BASE_URL:http://localhost:8090}
   github:
     baseUrl: ${GITHUB_BASE_URL:https://api.github.com}
   stackoverflow:
