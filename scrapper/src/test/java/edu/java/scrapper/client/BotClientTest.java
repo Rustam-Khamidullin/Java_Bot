@@ -43,8 +43,7 @@ public class BotClientTest {
         LinkUpdateRequest request = new LinkUpdateRequest(
             666,
             URI.create("link"),
-            "description",
-            List.of()
+            "description"
         );
 
         ResponseEntity<?> responseEntity = botClient.sendUpdate(request);

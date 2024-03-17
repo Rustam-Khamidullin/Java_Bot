@@ -1,12 +1,17 @@
 app:
   scheduler:
     enable: true
-    interval: 15000
-    force-check-delay: 15000
+    interval: 30000
+    force-check-delay: 30000
 
 spring:
   application:
     name: scrapper
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scrapper
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
 
 api:
   bot:

@@ -13,7 +13,4 @@
     <changeSet id="create_link_table" author="Rustam">
         <sqlFile path="sql/create_link_table.sql"/>
     </changeSet>
-    <changeSet id="create_link_chat_table" author="Rustam">
-        <sqlFile path="sql/create_link_chat_table.sql"/>
-    </changeSet>
 </databaseChangeLog>
