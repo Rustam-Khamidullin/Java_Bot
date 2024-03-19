@@ -26,30 +26,29 @@ public class LiquibaseTest {
         OffsetDateTime time = OffsetDateTime.now();
 
         jdbcTemplate.update("INSERT INTO chat (id) VALUES (?)", chatId);
-        jdbcTemplate.update("INSERT INTO link (id, url, last_update) VALUES (?, ?, ?)", linkId, url, time);
-        jdbcTemplate.update("INSERT INTO chat_link (id_chat, id_link) VALUES (?, ?)", chatId, linkId);
+        jdbcTemplate.update(
+            "INSERT INTO link (id_link, url, id_chat, last_update) VALUES (?, ?, ?, ?)",
+            linkId,
+            url,
+            chatId,
+            time
+        );
 
         Long actualChatId = jdbcTemplate.queryForObject(
             "SELECT id FROM chat WHERE id = ?",
             Long.class, chatId
         );
         String actualUrl = jdbcTemplate.queryForObject(
-            "SELECT url FROM link WHERE id = ?",
+            "SELECT url FROM link WHERE id_link = ?",
             String.class, linkId
         );
         OffsetDateTime actualTime = jdbcTemplate.queryForObject(
-            "SELECT last_update FROM link WHERE id = ?",
+            "SELECT last_update FROM link WHERE id_link = ?",
             OffsetDateTime.class, linkId
-        );
-        Long actualLinkId = jdbcTemplate.queryForObject(
-            "SELECT id_link FROM chat_link WHERE id_chat = ?",
-            Long.class,
-            chatId
         );
 
         Assertions.assertEquals(actualChatId, chatId);
         Assertions.assertEquals(actualUrl, url);
         Assertions.assertEquals(time.toEpochSecond(), actualTime.toEpochSecond());
-        Assertions.assertEquals(actualLinkId, linkId);
     }
 }

@@ -7,6 +7,7 @@ import edu.java.configuration.ApplicationConfiguration;
 import edu.java.domain.LinkRepository;
 import edu.java.dto.bot.request.LinkUpdateRequest;
 import edu.java.dto.repository.Link;
+import edu.java.dto.stackoverflow.Questions;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,23 +60,51 @@ public class LinkUpdaterService {
                 path.getName(1).toString()
             );
 
-            if (repository.updatedAt().isAfter(lastUpdate)
-                || repository.pushedAt().isAfter(lastUpdate)) {
+            String description = null;
+
+            if (repository.updatedAt().isAfter(lastUpdate)) {
+                description = url + " has new update.";
+            } else if (repository.pushedAt().isAfter(lastUpdate)) {
+                description = url + " has something pushed.";
+            }
+
+            if (description != null) {
                 botClient.sendUpdate(
                     new LinkUpdateRequest(
                         link.chatId(),
                         url,
-                        "github changes"
+                        description
                     )
                 );
             }
-            return;
-        }
-
-        if (url.getHost().equals("stackoverflow.com")
+        } else if (url.getHost().equals("stackoverflow.com")
             && path.getNameCount() == 2
             && path.getName(0).toString().equals("questions")) {
-            // todo stackoverflow handling
+            Questions questions = stackOverflowClient.getQuestions(
+                Integer.parseInt(path.getName(1).toString()));
+
+            if (!questions.items().isEmpty()) {
+                OffsetDateTime lastActivityDate = questions.items().getFirst().lastActivityDate();
+                OffsetDateTime lastEditDate = questions.items().getFirst().lastEditDate();
+
+                String description = null;
+
+                if (lastEditDate.isAfter(lastUpdate)) {
+                    description = url + "edited.";
+                } else if (lastActivityDate.isAfter(lastUpdate)) {
+                    description = url + "new activity.";
+                }
+
+                if (description != null) {
+                    botClient.sendUpdate(
+                        new LinkUpdateRequest(
+                            link.chatId(),
+                            url,
+                            description
+                        )
+                    );
+                }
+            }
         }
     }
 }
