@@ -1,4 +1,5 @@
 --liquibase formatted sql
+--changeset Rustam:create_chat_table
 
 CREATE TABLE IF NOT EXISTS chat
 (

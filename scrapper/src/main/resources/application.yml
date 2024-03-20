@@ -12,6 +12,11 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
+  liquibase:
+    enabled: false
+    drop-first: false
+    change-log:  migrations/master.xml
+    default-schema: public
 
 api:
   bot:
