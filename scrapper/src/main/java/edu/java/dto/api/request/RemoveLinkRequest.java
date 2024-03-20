@@ -1,9 +1,9 @@
 package edu.java.dto.api.request;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 public record RemoveLinkRequest(
-    @Valid
+    @NotBlank
     String link
 ) {
 }

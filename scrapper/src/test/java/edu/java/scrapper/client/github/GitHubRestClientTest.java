@@ -47,7 +47,7 @@ public class GitHubRestClientTest {
                 .withStatus(200)
                 .withBody(
                     "{\n" +
-                        "    \"id\": 754063270,\n" +
+                        "    \"chatId\": 754063270,\n" +
                         "    \"node_id\": \"R_kgDOLPIXpg\",\n" +
                         "    \"name\": \"Java_Bot\",\n" +
                         "    \"full_name\": \"Rustam-Khamidullin/Java_Bot\",\n" +
@@ -61,16 +61,11 @@ public class GitHubRestClientTest {
                         "}"
                 )));
 
-        ResponseEntity<Repository> responseEntityRepositoryResult = gitHubRestClient.getRepository(owner, repository);
+        Repository repositoryResponse = gitHubRestClient.getRepository(owner, repository);
 
-        Assertions.assertTrue(responseEntityRepositoryResult.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(responseEntityRepositoryResult.hasBody());
-
-        var repositoryResult = responseEntityRepositoryResult.getBody();
-
-        Assertions.assertEquals(id, repositoryResult.id());
-        Assertions.assertEquals(pushed_at, repositoryResult.pushedAt());
-        Assertions.assertEquals(updated_at, repositoryResult.updatedAt());
+        Assertions.assertEquals(id, repositoryResponse.id());
+        Assertions.assertEquals(pushed_at, repositoryResponse.pushedAt());
+        Assertions.assertEquals(updated_at, repositoryResponse.updatedAt());
     }
 
     @Test
@@ -86,15 +81,10 @@ public class GitHubRestClientTest {
                 .withStatus(200)
                 .withBody("{}")));
 
-        ResponseEntity<Repository> responseEntityRepositoryResult = gitHubRestClient.getRepository(owner, repository);
+        Repository repositoryResponse = gitHubRestClient.getRepository(owner, repository);
 
-        Assertions.assertTrue(responseEntityRepositoryResult.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(responseEntityRepositoryResult.hasBody());
-
-        var repositoryResult = responseEntityRepositoryResult.getBody();
-
-        Assertions.assertNull(repositoryResult.pushedAt());
-        Assertions.assertNull(repositoryResult.updatedAt());
+        Assertions.assertNull(repositoryResponse.pushedAt());
+        Assertions.assertNull(repositoryResponse.updatedAt());
     }
 
     @Test
@@ -109,10 +99,7 @@ public class GitHubRestClientTest {
                 .withHeader("Content-Type", "application/json")
             ));
 
-        ResponseEntity<Repository> responseEntityRepositoryResult = gitHubRestClient.getRepository(owner, repository);
-
-        Assertions.assertTrue(responseEntityRepositoryResult.getStatusCode().is2xxSuccessful());
-        Assertions.assertFalse(responseEntityRepositoryResult.hasBody());
+        Assertions.assertDoesNotThrow(() -> gitHubRestClient.getRepository(owner, repository));
     }
 
     @Test

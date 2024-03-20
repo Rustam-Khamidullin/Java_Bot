@@ -1,6 +1,7 @@
 package edu.java;
 
 import edu.java.configuration.ApplicationConfiguration;
+import edu.java.configuration.client.BotClientConfiguration;
 import edu.java.configuration.client.GitHubClientConfiguration;
 import edu.java.configuration.client.StackOverflowConfiguration;
 import org.springframework.boot.SpringApplication;
@@ -12,11 +13,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties({
     ApplicationConfiguration.class,
     GitHubClientConfiguration.class,
-    StackOverflowConfiguration.class})
+    StackOverflowConfiguration.class,
+    BotClientConfiguration.class})
 @EnableScheduling
 public class ScrapperApplication {
     public static void main(String[] args) {
         SpringApplication.run(ScrapperApplication.class, args);
     }
-
 }

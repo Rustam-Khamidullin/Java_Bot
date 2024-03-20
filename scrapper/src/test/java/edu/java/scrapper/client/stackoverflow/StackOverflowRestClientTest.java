@@ -69,16 +69,11 @@ public class StackOverflowRestClientTest {
                         "}"
                 )));
 
-        ResponseEntity<Questions> responseEntityQuestionResult = stackOverflowRestClient.getQuestions(id);
+        Questions questionsResponse = stackOverflowRestClient.getQuestions(id);
 
-        Assertions.assertTrue(responseEntityQuestionResult.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(responseEntityQuestionResult.hasBody());
-
-        var questionResult = responseEntityQuestionResult.getBody();
-
-        Assertions.assertEquals(id, questionResult.items().getFirst().id());
-        Assertions.assertEquals(lastActivityDate, questionResult.items().getFirst().lastActivityDate());
-        Assertions.assertEquals(answerCount, questionResult.items().getFirst().answerCount());
+        Assertions.assertEquals(id, questionsResponse.items().getFirst().id());
+        Assertions.assertEquals(lastActivityDate, questionsResponse.items().getFirst().lastActivityDate());
+        Assertions.assertEquals(answerCount, questionsResponse.items().getFirst().answerCount());
     }
 
     @Test
@@ -93,14 +88,9 @@ public class StackOverflowRestClientTest {
                 .withStatus(200)
                 .withBody("{}")));
 
-        ResponseEntity<Questions> responseEntityQuestionsResult = stackOverflowRestClient.getQuestions(id);
+        Questions questionsResponse = stackOverflowRestClient.getQuestions(id);
 
-        Assertions.assertTrue(responseEntityQuestionsResult.getStatusCode().is2xxSuccessful());
-        Assertions.assertTrue(responseEntityQuestionsResult.hasBody());
-
-        var questionsResult = responseEntityQuestionsResult.getBody();
-
-        Assertions.assertNull(questionsResult.items());
+        Assertions.assertNull(questionsResponse.items());
     }
 
     @Test
@@ -114,10 +104,7 @@ public class StackOverflowRestClientTest {
                 .withHeader("Content-Type", "application/json")
             ));
 
-        ResponseEntity<Questions> responseEntityQuestionsResult = stackOverflowRestClient.getQuestions(id);
-
-        Assertions.assertTrue(responseEntityQuestionsResult.getStatusCode().is2xxSuccessful());
-        Assertions.assertFalse(responseEntityQuestionsResult.hasBody());
+        Assertions.assertDoesNotThrow(() -> stackOverflowRestClient.getQuestions(id));
     }
 
     @Test

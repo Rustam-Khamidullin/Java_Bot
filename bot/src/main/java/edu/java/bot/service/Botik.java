@@ -9,7 +9,9 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.service.command.Command;
+import org.springframework.stereotype.Service;
 
+@Service
 public class Botik {
     private final TelegramBot bot;
 
