@@ -2,7 +2,8 @@ app:
   scheduler:
     enable: true
     interval: 30000
-    force-check-delay: 30000
+    force-check-delay: 60000
+  database-access-type: jpa
 
 spring:
   application:
@@ -17,6 +18,12 @@ spring:
     drop-first: false
     change-log:  migrations/master.xml
     default-schema: public
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    open-in-view: true
 
 api:
   bot:
