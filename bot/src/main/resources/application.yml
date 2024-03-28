@@ -16,3 +16,14 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+retry:
+  # const, line, exp
+  strategy: line
+  maxAttempt: 3
+  delay: 1000
+  multiplier: 2
+  retryableStatusCodes:
+    - 400
+    - 404
+    - 500

@@ -1,13 +1,18 @@
 package edu.java.scrapper.client.stackoverflow;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import edu.java.client.github.GitHubRestClient;
+import edu.java.client.stackoverflow.StackOverflowClient;
 import edu.java.client.stackoverflow.StackOverflowRestClient;
 import edu.java.dto.stackoverflow.Questions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -16,16 +21,22 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
+@SpringBootTest
 public class StackOverflowRestClientTest {
+    private final RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
-    static private StackOverflowRestClient stackOverflowRestClient;
+    static private StackOverflowClient stackOverflowRestClient;
 
+    @Autowired
+    public StackOverflowRestClientTest(RetryTemplate retryTemplate) {
+        this.retryTemplate = retryTemplate;
+    }
     @BeforeEach
     public void setUp() {
         wireMockServer = new WireMockServer(35234);
         wireMockServer.start();
 
-        stackOverflowRestClient = new StackOverflowRestClient("http://localhost:" + wireMockServer.port());
+        stackOverflowRestClient = new StackOverflowRestClient("http://localhost:" + wireMockServer.port(),retryTemplate);
     }
 
     @AfterEach
