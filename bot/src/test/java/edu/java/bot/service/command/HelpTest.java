@@ -1,38 +1,42 @@
 package edu.java.bot.service.command;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Method;
-import java.util.List;
-import static org.mockito.Mockito.mockStatic;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class HelpTest {
-    @Test
-    void generateAnswerTest() {
-        try {
-            Method method = Help.class.getDeclaredMethod("generateAnswer");
-            method.setAccessible(true);
-            mockStatic(Command.class);
-            when(Command.availableCommands()).thenReturn(
-                List.of(
-                    new Help(),
-                    new Help(),
-                    new Help()
-                )
-            );
+    @Mock
+    private Command mockedCommand1;
+    @Mock
+    private Command mockedCommand2;
 
-            Help help = new Help();
-            String result = (String) method.invoke(help);
+    @SneakyThrows @Test
+    public void testGenerateAnswer() {
+        Map<String, Command> commands = new HashMap<>();
+        commands.put("command1", mockedCommand1);
+        commands.put("command2", mockedCommand2);
 
-            Assertions.assertEquals(
-                "List of commands:\n"
-                    + help.command() + " - " + help.description() + "\n"
-                    + help.command() + " - " + help.description() + "\n"
-                    + help.command() + " - " + help.description() + "\n"
-                , result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        when(mockedCommand1.description()).thenReturn("Description for command1");
+        when(mockedCommand2.description()).thenReturn("Description for command2");
+
+        Method method = Help.class.getDeclaredMethod("generateAnswer");
+        method.setAccessible(true);
+        Help help = new Help(commands);
+
+        String answer = (String) method.invoke(help);
+
+        String expectedAnswer = "List of commands:\n" +
+            "command1 - Description for command1\n" +
+            "command2 - Description for command2\n";
+        Assertions.assertEquals(expectedAnswer, answer);
     }
 }
+

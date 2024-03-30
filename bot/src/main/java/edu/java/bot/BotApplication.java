@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(ApplicationConfig.class)
 @RequiredArgsConstructor
 public class BotApplication implements CommandLineRunner {
-    private final ApplicationConfig applicationConfig;
+    private final Botik botik;
 
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
@@ -20,8 +20,6 @@ public class BotApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Botik bot = new Botik(applicationConfig);
-
-        bot.start();
+        botik.start();
     }
 }

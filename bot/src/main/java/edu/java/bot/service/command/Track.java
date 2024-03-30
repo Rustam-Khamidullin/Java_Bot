@@ -2,8 +2,14 @@ package edu.java.bot.service.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.service.ScrapperService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component("/track")
+@RequiredArgsConstructor
 public class Track extends Command {
+    private final ScrapperService scrapperService;
     private static final String SUCCESSFUL_MESSAGE = "The link has been added to the tracked.";
     private static final String UNSUCCESSFUL_MESSAGE = "It is not possible to track this link.";
 
@@ -24,19 +30,13 @@ public class Track extends Command {
 
     @Override
     public SendMessage handle(Update update) {
-        //track logic
-        boolean success = true;
-
         long chatId = update.message().chat().id();
-        String answer = generateAnswer(success);
 
-        return new SendMessage(chatId, answer);
-    }
-
-    private String generateAnswer(boolean success) {
-        if (success) {
-            return SUCCESSFUL_MESSAGE;
+        if (argument.isBlank()) {
+            return new SendMessage(chatId, UNSUCCESSFUL_MESSAGE);
         }
-        return UNSUCCESSFUL_MESSAGE;
+
+        scrapperService.trackLink(chatId, argument);
+        return new SendMessage(chatId, SUCCESSFUL_MESSAGE);
     }
 }

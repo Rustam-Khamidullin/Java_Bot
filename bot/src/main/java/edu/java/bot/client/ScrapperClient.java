@@ -4,16 +4,19 @@ import edu.java.bot.dto.scrapper.request.AddLinkRequest;
 import edu.java.bot.dto.scrapper.request.RemoveLinkRequest;
 import edu.java.bot.dto.scrapper.response.LinkResponse;
 import edu.java.bot.dto.scrapper.response.ListLinksResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+@Component
 public class ScrapperClient {
     private static final String TG_CHAT_URL = "/tg-chat/%d";
     private static final String LINKS_URL = "/links";
     private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
     private final RestClient restClient;
 
-    public ScrapperClient(String baseUrl) {
+    public ScrapperClient(@Value("${api.scrapper.baseUrl}") String baseUrl) {
         restClient = RestClient.builder()
             .defaultHeader("Content-Type", "application/json")
             .baseUrl(baseUrl)
