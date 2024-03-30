@@ -15,8 +15,15 @@ spring:
   liquibase:
     enabled: false
     drop-first: false
-    change-log:  migrations/master.xml
+    change-log: migrations/master.xml
     default-schema: public
+  cache:
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+    cache-names:
+      - rate-limit-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
 
 api:
   bot:
@@ -43,3 +50,14 @@ retry:
     - 404
     - 500
 
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: rate-limit-buckets
+      url: .*
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 3
+              time: 10
+              unit: minutes

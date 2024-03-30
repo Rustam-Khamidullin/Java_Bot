@@ -8,6 +8,7 @@ import edu.java.configuration.retry.RetryConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -17,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
     GitHubClientConfiguration.class,
     StackOverflowConfiguration.class,
     BotClientConfiguration.class})
+@EnableCaching
 @EnableScheduling
 public class ScrapperApplication {
     public static void main(String[] args) {
