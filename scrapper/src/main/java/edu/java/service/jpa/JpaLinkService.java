@@ -18,8 +18,8 @@ public class JpaLinkService implements LinkService {
     @Override
     @Transactional
     public Link add(long tgChatId, URI url) {
-        chatRepository.saveIfNotExists(tgChatId);
-        var link = linkRepository.saveIfNotExists(tgChatId, url);
+        chatRepository.saveIfNotExisting(tgChatId);
+        var link = linkRepository.saveIfNotExisting(tgChatId, url);
 
         return new Link(
             link.getId(),

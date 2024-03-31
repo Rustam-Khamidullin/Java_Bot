@@ -16,8 +16,8 @@ public class JdbcLinkService implements LinkService {
 
     @Override
     public Link add(long tgChatId, URI url) {
-        chatRepository.addOrGetExists(tgChatId);
-        return linkRepository.addOrGetExists(tgChatId, url);
+        chatRepository.addOrGetExisting(tgChatId);
+        return linkRepository.addOrGetExisting(tgChatId, url);
     }
 
     @Override

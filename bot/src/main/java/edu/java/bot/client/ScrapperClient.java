@@ -43,21 +43,32 @@ public class ScrapperClient {
             .body(ListLinksResponse.class);
     }
 
-    public LinkResponse addLink(long tgChatId, AddLinkRequest addLinkRequest) {
+    public LinkResponse addLink(long tgChatId, AddLinkRequest addLinkRequest)
+        throws IllegalArgumentException {
         return restClient.post()
             .uri(LINKS_URL)
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(addLinkRequest)
             .retrieve()
+            .onStatus(status -> status.value() == 400, (request, response) -> {
+                throw new IllegalArgumentException("Incorrect URL");
+            })
             .body(LinkResponse.class);
     }
 
-    public LinkResponse removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest) {
+    public LinkResponse removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest)
+        throws IllegalArgumentException {
         return restClient.method(HttpMethod.DELETE)
             .uri(LINKS_URL)
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(removeLinkRequest)
             .retrieve()
+            .onStatus(status -> status.value() == 400, (request, response) -> {
+                throw new IllegalArgumentException("Incorrect URL");
+            })
+            .onStatus(status -> status.value() == 404, (request, response) -> {
+                throw new IllegalArgumentException("There is no such link");
+            })
             .body(LinkResponse.class);
     }
 }

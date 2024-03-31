@@ -25,17 +25,27 @@ public class ScrapperService {
             .map(e -> e.url().toString()).toList();
     }
 
-    public void trackLink(long tgChatId, String link) {
-        scrapperClient.addLink(
-            tgChatId,
-            new AddLinkRequest(link)
-        );
+    public boolean trackLink(long tgChatId, String link) {
+        try {
+            scrapperClient.addLink(
+                tgChatId,
+                new AddLinkRequest(link)
+            );
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
-    public void removeLink(long tgChatId, String link) {
-        scrapperClient.removeLink(
-            tgChatId,
-            new RemoveLinkRequest(link)
-        );
+    public boolean removeLink(long tgChatId, String link) {
+        try {
+            scrapperClient.removeLink(
+                tgChatId,
+                new RemoveLinkRequest(link)
+            );
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

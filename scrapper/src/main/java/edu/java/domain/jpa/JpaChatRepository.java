@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JpaChatRepository extends JpaRepository<ChatEntity, Long> {
-    default ChatEntity saveIfNotExists(Long tgChatId) {
+    default ChatEntity saveIfNotExisting(Long tgChatId) {
         return findById(tgChatId).orElseGet(() -> {
             ChatEntity newChat = new ChatEntity();
             newChat.setId(tgChatId);

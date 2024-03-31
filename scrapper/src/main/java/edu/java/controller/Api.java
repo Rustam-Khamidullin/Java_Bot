@@ -5,6 +5,7 @@ import edu.java.dto.api.request.RemoveLinkRequest;
 import edu.java.dto.api.response.LinkResponse;
 import edu.java.dto.api.response.ListLinksResponse;
 import edu.java.dto.repository.Link;
+import edu.java.exception.api.BadRequestException;
 import edu.java.exception.api.NotFoundException;
 import edu.java.service.ChatService;
 import edu.java.service.LinkService;
@@ -63,7 +64,13 @@ public class Api {
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
         @RequestBody @Valid AddLinkRequest request
     ) {
-        Link link = linkService.add(tgChatId, URI.create(request.link()));
+        URI url;
+        try {
+            url = URI.create(request.link());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Incorrect URL");
+        }
+        Link link = linkService.add(tgChatId, url);
         LinkResponse response = new LinkResponse(link.linkId(), link.url().toString());
 
         return ResponseEntity.ok(response);
@@ -74,7 +81,14 @@ public class Api {
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
         @RequestBody @Valid RemoveLinkRequest request
     ) {
-        Link link = linkService.remove(tgChatId, URI.create(request.link()));
+        URI url;
+        try {
+            url = URI.create(request.link());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Incorrect URL");
+        }
+
+        Link link = linkService.remove(tgChatId, url);
 
         if (link == null) {
             throw new NotFoundException("Ссылка не найдена");

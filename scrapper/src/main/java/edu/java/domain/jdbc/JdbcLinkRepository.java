@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 public class JdbcLinkRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public Link addOrGetExists(Long chatId, URI url) {
+    public Link addOrGetExisting(Long chatId, URI url) {
         Link existingLink = find(chatId, url);
 
         if (existingLink != null) {

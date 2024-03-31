@@ -13,7 +13,7 @@ public class JpaChatService implements ChatService {
     @Override
     @Transactional
     public Chat register(long tgChatId) {
-        var chat = chatRepository.saveIfNotExists(tgChatId);
+        var chat = chatRepository.saveIfNotExisting(tgChatId);
         return new Chat(
             chat.getId(),
             chat.getCreatedAt()

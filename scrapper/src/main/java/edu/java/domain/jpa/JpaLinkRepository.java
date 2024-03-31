@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JpaLinkRepository extends JpaRepository<LinkEntity, Long> {
-    default LinkEntity saveIfNotExists(Long tgChatId, URI url) {
+    default LinkEntity saveIfNotExisting(Long tgChatId, URI url) {
         var chat = new ChatEntity();
         chat.setId(tgChatId);
 

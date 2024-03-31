@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public class JdbcChatRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public Chat addOrGetExists(Long chatId) {
+    public Chat addOrGetExisting(Long chatId) {
         Chat existingLink = findByChatId(chatId);
 
         if (existingLink != null) {

@@ -11,7 +11,7 @@ public class JdbcChatService implements ChatService {
 
     @Override
     public Chat register(long tgChatId) {
-        return chatRepository.addOrGetExists(tgChatId);
+        return chatRepository.addOrGetExisting(tgChatId);
     }
 
     @Override

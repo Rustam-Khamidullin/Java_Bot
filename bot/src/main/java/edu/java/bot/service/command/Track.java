@@ -32,11 +32,11 @@ public class Track extends Command {
     public SendMessage handle(Update update) {
         long chatId = update.message().chat().id();
 
-        if (argument.isBlank()) {
+        if (argument.isBlank()
+            || !scrapperService.trackLink(chatId, argument)) {
             return new SendMessage(chatId, UNSUCCESSFUL_MESSAGE);
         }
 
-        scrapperService.trackLink(chatId, argument);
         return new SendMessage(chatId, SUCCESSFUL_MESSAGE);
     }
 }

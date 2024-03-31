@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class Untrack extends Command {
     private final ScrapperService scrapperService;
     private static final String SUCCESSFUL_MESSAGE = "Link tracking has been discontinued.";
-    private static final String UNSUCCESSFUL_MESSAGE = "Failed to stop tracking.";
+    private static final String UNSUCCESSFUL_MESSAGE = "Failed to untarck this link.";
 
     @Override
     public String command() {
@@ -31,11 +31,11 @@ public class Untrack extends Command {
     @Override
     public SendMessage handle(Update update) {
         long chatId = update.message().chat().id();
-        if (argument.isBlank()) {
+        if (argument.isBlank()
+            || !scrapperService.removeLink(chatId, argument)) {
             return new SendMessage(chatId, UNSUCCESSFUL_MESSAGE);
         }
 
-        scrapperService.removeLink(chatId, argument);
         return new SendMessage(chatId, SUCCESSFUL_MESSAGE);
     }
 }
