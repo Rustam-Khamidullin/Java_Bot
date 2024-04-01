@@ -3,6 +3,7 @@ package edu.java.scrapper.service.jdbc;
 import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.domain.jdbc.JdbcLinkRepository;
 import edu.java.dto.repository.Link;
+import edu.java.scrapper.IntegrationTest;
 import edu.java.service.jdbc.JdbcLinkService;
 import edu.java.service.jpa.JpaLinkService;
 import java.net.URI;
@@ -15,7 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-public class JdbcLinkServiceTest {
+public class JdbcLinkServiceTest extends IntegrationTest {
     @Autowired
     private JdbcLinkRepository jdbcLinkRepository;
     @Autowired
