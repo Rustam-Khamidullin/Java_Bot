@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface JpaLinkRepository extends JpaRepository<LinkEntity, Long> {
@@ -25,7 +25,7 @@ public interface JpaLinkRepository extends JpaRepository<LinkEntity, Long> {
             LinkEntity newLink = new LinkEntity();
             newLink.setUrl(url.toString());
             newLink.setChat(chat);
-            return save(newLink);
+            return saveAndFlush(newLink);
         });
     }
 
@@ -41,7 +41,7 @@ public interface JpaLinkRepository extends JpaRepository<LinkEntity, Long> {
     List<LinkEntity> findByLastUpdateBefore(Timestamp timestamp);
 
     @Modifying
+    @Transactional
     @Query("UPDATE LinkEntity l SET l.lastUpdate = CURRENT_TIMESTAMP WHERE l.id IN :ids")
     void updateLastUpdateForIds(@Param("ids") Set<Long> ids);
-
 }

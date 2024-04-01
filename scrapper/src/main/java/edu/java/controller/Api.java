@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class Api {
     private final Logger logger = Logger.getLogger("ApiController");
+    private static final String INCORRECT_URL = "Incorrect URL";
     private final LinkService linkService;
     private final ChatService chatService;
 
@@ -68,7 +69,7 @@ public class Api {
         try {
             url = URI.create(request.link());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Incorrect URL");
+            throw new BadRequestException(INCORRECT_URL);
         }
         Link link = linkService.add(tgChatId, url);
         LinkResponse response = new LinkResponse(link.linkId(), link.url().toString());
@@ -85,7 +86,7 @@ public class Api {
         try {
             url = URI.create(request.link());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Incorrect URL");
+            throw new BadRequestException(INCORRECT_URL);
         }
 
         Link link = linkService.remove(tgChatId, url);

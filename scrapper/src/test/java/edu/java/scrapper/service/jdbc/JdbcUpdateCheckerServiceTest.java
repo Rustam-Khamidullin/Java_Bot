@@ -1,11 +1,11 @@
-package edu.java.scrapper.service.jpa;
+package edu.java.scrapper.service.jdbc;
 
-import edu.java.domain.jpa.JpaChatRepository;
-import edu.java.domain.jpa.JpaLinkRepository;
+import edu.java.domain.jdbc.JdbcChatRepository;
+import edu.java.domain.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.LinkUpdateCheckerService;
-import edu.java.service.jpa.JpaLinkService;
-import edu.java.service.jpa.JpaLinkUpdateCheckerService;
+import edu.java.service.jdbc.JdbcLinkService;
+import edu.java.service.jdbc.JdbcLinkUpdateCheckerService;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -20,20 +20,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class LinkUpdateCheckerServiceTest extends IntegrationTest {
+public class JdbcUpdateCheckerServiceTest extends IntegrationTest {
     @Autowired
-    private JpaLinkRepository jpaLinkRepository;
+    private JdbcLinkRepository jdbcLinkRepository;
     @Autowired
-    private JpaChatRepository jpaChatRepository;
+    private JdbcChatRepository jdbcChatRepository;
 
     @Transactional
     @SneakyThrows
     @Rollback
     @Test
     void getUnupdatedTest() {
-        JpaLinkService linkService = new JpaLinkService(jpaLinkRepository, jpaChatRepository);
+        JdbcLinkService linkService = new JdbcLinkService(jdbcLinkRepository, jdbcChatRepository);
         LinkUpdateCheckerService linkUpdateCheckerService =
-            new JpaLinkUpdateCheckerService(jpaLinkRepository);
+            new JdbcLinkUpdateCheckerService(jdbcLinkRepository);
 
         Timestamp start = new Timestamp(Instant.now().toEpochMilli());
 

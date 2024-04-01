@@ -6,6 +6,7 @@ import edu.java.bot.dto.scrapper.response.LinkResponse;
 import edu.java.bot.dto.scrapper.response.ListLinksResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -14,6 +15,7 @@ public class ScrapperClient {
     private static final String TG_CHAT_URL = "/tg-chat/%d";
     private static final String LINKS_URL = "/links";
     private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
+    private static final String INCORRECT_URL = "Incorrect URL";
     private final RestClient restClient;
 
     public ScrapperClient(@Value("${api.scrapper.baseUrl}") String baseUrl) {
@@ -50,8 +52,8 @@ public class ScrapperClient {
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(addLinkRequest)
             .retrieve()
-            .onStatus(status -> status.value() == 400, (request, response) -> {
-                throw new IllegalArgumentException("Incorrect URL");
+            .onStatus(status -> status == HttpStatus.BAD_REQUEST, (request, response) -> {
+                throw new IllegalArgumentException(INCORRECT_URL);
             })
             .body(LinkResponse.class);
     }
@@ -63,10 +65,10 @@ public class ScrapperClient {
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(removeLinkRequest)
             .retrieve()
-            .onStatus(status -> status.value() == 400, (request, response) -> {
-                throw new IllegalArgumentException("Incorrect URL");
+            .onStatus(status -> status == HttpStatus.BAD_REQUEST, (request, response) -> {
+                throw new IllegalArgumentException(INCORRECT_URL);
             })
-            .onStatus(status -> status.value() == 404, (request, response) -> {
+            .onStatus(status -> status == HttpStatus.NOT_FOUND, (request, response) -> {
                 throw new IllegalArgumentException("There is no such link");
             })
             .body(LinkResponse.class);

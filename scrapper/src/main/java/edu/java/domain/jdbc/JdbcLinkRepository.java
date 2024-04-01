@@ -44,7 +44,7 @@ public class JdbcLinkRepository {
         return new Link(
             (Long) keys.get("id_link"),
             url,
-            (Long) keys.get("id_chat"),
+            chatId,
             (Timestamp) keys.get("last_update")
         );
     }

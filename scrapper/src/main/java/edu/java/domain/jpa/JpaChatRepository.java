@@ -10,7 +10,7 @@ public interface JpaChatRepository extends JpaRepository<ChatEntity, Long> {
         return findById(tgChatId).orElseGet(() -> {
             ChatEntity newChat = new ChatEntity();
             newChat.setId(tgChatId);
-            return save(newChat);
+            return saveAndFlush(newChat);
         });
     }
 }

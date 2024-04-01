@@ -1,28 +1,26 @@
-package edu.java.scrapper.service.jpa;
+package edu.java.scrapper.service.jdbc;
 
-import edu.java.domain.jpa.JpaChatRepository;
+import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.dto.repository.Chat;
 import edu.java.scrapper.IntegrationTest;
-import edu.java.service.jpa.JpaChatService;
+import edu.java.service.jdbc.JdbcChatService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class JpaChatServiceTest extends IntegrationTest {
+public class JdbcChatServiceTest extends IntegrationTest {
     @Autowired
-    private JpaChatRepository jpaChatRepository;
+    private JdbcChatRepository jdbcChatRepository;
 
     @Transactional
     @Rollback
     @Test
     public void testRegister() {
-        JpaChatService chatService = new JpaChatService(jpaChatRepository);
+        JdbcChatService chatService = new JdbcChatService(jdbcChatRepository);
 
         long tgChatId = 123456L;
 
@@ -43,16 +41,16 @@ public class JpaChatServiceTest extends IntegrationTest {
     @Rollback
     @Test
     public void testUnregister() {
-        JpaChatService chatService = new JpaChatService(jpaChatRepository);
+        JdbcChatService chatService = new JdbcChatService(jdbcChatRepository);
 
         long tgChatId = 123456L;
         Chat chat = chatService.register(tgChatId);
 
         Assertions.assertNotNull(chat);
-        Assertions.assertTrue(jpaChatRepository.existsById(tgChatId));
+        Assertions.assertNotNull(jdbcChatRepository.findByChatId(tgChatId));
 
         boolean result = chatService.unregister(tgChatId);
         Assertions.assertTrue(result);
-        Assertions.assertFalse(jpaChatRepository.existsById(tgChatId));
+        Assertions.assertNull(jdbcChatRepository.findByChatId(tgChatId));
     }
 }
