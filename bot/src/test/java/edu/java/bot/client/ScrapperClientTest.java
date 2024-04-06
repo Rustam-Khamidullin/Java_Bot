@@ -5,34 +5,43 @@ import edu.java.bot.dto.scrapper.request.AddLinkRequest;
 import edu.java.bot.dto.scrapper.request.RemoveLinkRequest;
 import edu.java.bot.dto.scrapper.response.LinkResponse;
 import edu.java.bot.dto.scrapper.response.ListLinksResponse;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.retry.support.RetryTemplate;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
+@SpringBootTest
 class ScrapperClientTest {
-
+    private final RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
     static private ScrapperClient scrapperClient;
     static private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    public ScrapperClientTest(RetryTemplate retryTemplate) {
+        this.retryTemplate = retryTemplate;
+    }
 
     @BeforeEach
     public void setUp() {
         wireMockServer = new WireMockServer(23213);
         wireMockServer.start();
 
-        scrapperClient = new ScrapperClient("http://localhost:" + wireMockServer.port());
+        scrapperClient = new ScrapperClient("http://localhost:" + wireMockServer.port(), retryTemplate);
     }
 
     @AfterEach
@@ -44,7 +53,7 @@ class ScrapperClientTest {
     void registerChat() {
         long id = 1234;
 
-        wireMockServer.stubFor(post(urlEqualTo("/tg-chat/%d" .formatted(id)))
+        wireMockServer.stubFor(post(urlEqualTo("/tg-chat/%d".formatted(id)))
             .withHeader("Content-Type", equalTo("application/json"))
             .willReturn(aResponse()
                 .withStatus(200)
@@ -57,12 +66,11 @@ class ScrapperClientTest {
     void deleteChat() {
         long id = 1234;
 
-        wireMockServer.stubFor(delete(urlEqualTo("/tg-chat/%d" .formatted(id)))
+        wireMockServer.stubFor(delete(urlEqualTo("/tg-chat/%d".formatted(id)))
             .withHeader("Content-Type", equalTo("application/json"))
             .willReturn(aResponse()
                 .withStatus(200)
                 .withBody("Mocked Response")));
-
 
         Assertions.assertDoesNotThrow(() -> scrapperClient.deleteChat(id));
     }

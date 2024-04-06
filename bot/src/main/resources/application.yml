@@ -6,6 +6,13 @@ spring:
     name: bot
   jackson:
     time-zone: UTC
+  cache:
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+    cache-names:
+      - rate-limit-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
 
 api:
   scrapper:
@@ -16,3 +23,26 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+retry:
+  # const, line, exp
+  strategy: line
+  maxAttempt: 3
+  delay: 1000
+  multiplier: 2
+  retryableStatusCodes:
+    - 400
+    - 404
+    - 500
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: rate-limit-buckets
+      url: .*
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 3
+              time: 10
+              unit: minutes
