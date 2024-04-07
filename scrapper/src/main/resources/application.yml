@@ -4,10 +4,17 @@ app:
     interval: 30000
     force-check-delay: 60000
   database-access-type: jpa
+  useQueue: true
+  updateTopicName: "Updates"
 
 spring:
   application:
     name: scrapper
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
     url: jdbc:postgresql://localhost:5432/scrapper
     driver-class-name: org.postgresql.Driver
@@ -16,12 +23,12 @@ spring:
   liquibase:
     enabled: false
     drop-first: false
-    change-log:  migrations/master.xml
+    change-log: migrations/master.xml
     default-schema: public
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: true
     open-in-view: true
 

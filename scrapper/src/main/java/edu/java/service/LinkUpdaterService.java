@@ -1,6 +1,5 @@
 package edu.java.service;
 
-import edu.java.client.BotClient;
 import edu.java.client.github.GitHubClient;
 import edu.java.client.stackoverflow.StackOverflowClient;
 import edu.java.configuration.ApplicationConfiguration;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @RequiredArgsConstructor
 public class LinkUpdaterService {
@@ -29,7 +27,7 @@ public class LinkUpdaterService {
 
     private final GitHubClient gitHubClient;
     private final StackOverflowClient stackOverflowClient;
-    private final BotClient botClient;
+    private final BotNotificationService botNotificationService;
 
     @Scheduled(fixedDelayString = "#{@scheduler.interval.toMillis()}")
     public void update() {
@@ -79,7 +77,7 @@ public class LinkUpdaterService {
             }
 
             if (description != null) {
-                botClient.sendUpdate(
+                botNotificationService.sendNotification(
                     new LinkUpdateRequest(
                         link.chatId(),
                         url,
@@ -106,7 +104,7 @@ public class LinkUpdaterService {
                 }
 
                 if (description != null) {
-                    botClient.sendUpdate(
+                    botNotificationService.sendNotification(
                         new LinkUpdateRequest(
                             link.chatId(),
                             url,

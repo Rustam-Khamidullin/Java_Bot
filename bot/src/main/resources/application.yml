@@ -1,9 +1,17 @@
 bot:
   telegramToken: ${BOT_TOKEN:token}
 
+kafka-configuration:
+  updateTopicName: "Updates"
+
 spring:
   application:
     name: bot
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: "bot"
   jackson:
     time-zone: UTC
 

@@ -1,5 +1,6 @@
 package edu.java.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import lombok.Data;
@@ -12,6 +13,11 @@ import org.springframework.validation.annotation.Validated;
 @Data
 public class ApplicationConfiguration {
     private final Scheduler scheduler;
+
+    @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 
     @Bean
     public Scheduler scheduler() {
