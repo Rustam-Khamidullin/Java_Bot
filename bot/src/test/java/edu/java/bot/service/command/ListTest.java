@@ -1,35 +1,52 @@
 package edu.java.bot.service.command;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import edu.java.bot.service.ScrapperService;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class ListTest {
+    @Mock
+    private ScrapperService mockedScrapperService;
+
     @Test
-    void generateAnswerTest() {
-        try {
-            Method method = List.class.getDeclaredMethod("generateAnswer", java.util.List.class);
-            method.setAccessible(true);
+    @SneakyThrows
+    public void testGenerateAnswerWithEmptyList() {
+        java.util.List<String> emptyList = new ArrayList<>();
 
-            List list = new List();
+        Method method = List.class.getDeclaredMethod("generateAnswer", java.util.List.class);
+        method.setAccessible(true);
+        List listCommand = new List(mockedScrapperService);
 
-            java.util.List<String> links = new ArrayList<>();
+        String answer = (String) method.invoke(listCommand, emptyList);
 
-            String result = (String) method.invoke(list, links);
-            Assertions.assertEquals("There is no tracking links.", result);
+        Assertions.assertEquals("There is no tracking links.", answer);
+    }
 
-            links.add("first-link");
-            links.add("second-link");
+    @Test
+    @SneakyThrows
+    public void testGenerateAnswerWithNonEmptyList() {
+        java.util.List<String> links = java.util.List.of("link1", "link2", "link3");
 
-            result = (String) method.invoke(list, links);
-            Assertions.assertEquals(
-                "Tracking links:\n"
-                    + "first-link\n"
-                    + "second-link\n", result);
+        Method method = List.class.getDeclaredMethod("generateAnswer", java.util.List.class);
+        method.setAccessible(true);
+        List listCommand = new List(mockedScrapperService);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String answer = (String) method.invoke(listCommand, links);
+
+        String expectedAnswer = """
+            Tracking links:
+            link1
+            link2
+            link3
+            """;
+        Assertions.assertEquals(expectedAnswer, answer);
     }
 }

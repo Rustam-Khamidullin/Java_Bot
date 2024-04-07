@@ -1,27 +1,31 @@
 package edu.java.bot.service.command;
 
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class CommandTest {
-    @ParameterizedTest
-    @MethodSource("generateCommands")
-    void commandNameTest(Command command) {
-        Assertions.assertNotNull(command.command());
-        Assertions.assertFalse(command.command().isEmpty());
+    @Autowired
+    private Map<String, Command> commands;
+
+    @Test
+    void commandNameTest() {
+        for (var command : commands.entrySet()) {
+            Assertions.assertNotNull(command.getValue().command());
+            Assertions.assertFalse(command.getValue().command().isEmpty());
+        }
     }
 
-    @ParameterizedTest
-    @MethodSource("generateCommands")
-    void commandDescriptionTest(Command command) {
-        Assertions.assertNotNull(command.description());
-        Assertions.assertFalse(command.description().isEmpty());
-    }
+    @Test
+    void commandDescriptionTest() {
+        for (var command : commands.entrySet()) {
+            Assertions.assertNotNull(command.getValue().description());
+            Assertions.assertFalse(command.getValue().description().isEmpty());
+        }
 
-    static Stream<Arguments> generateCommands() {
-        return Command.availableCommands().stream().map(Arguments::arguments);
     }
 }
