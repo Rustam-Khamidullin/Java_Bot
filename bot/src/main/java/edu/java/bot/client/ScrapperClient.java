@@ -6,8 +6,8 @@ import edu.java.bot.dto.scrapper.response.LinkResponse;
 import edu.java.bot.dto.scrapper.response.ListLinksResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 

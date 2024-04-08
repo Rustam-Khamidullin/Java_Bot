@@ -29,7 +29,7 @@ class ScrapperClientTest {
     private final RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
     static private ScrapperClient scrapperClient;
-    static private ObjectMapper objectMapper = new ObjectMapper();
+    static private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public ScrapperClientTest(RetryTemplate retryTemplate) {

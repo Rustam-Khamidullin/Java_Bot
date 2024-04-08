@@ -20,14 +20,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest
 public class BotClientTest {
-    private final RetryTemplate retryTemplate;
+    @Autowired
+    private RetryTemplate retryTemplate;
     private static WireMockServer wireMockServer;
     private static BotClient botClient;
-
-    @Autowired
-    public BotClientTest(RetryTemplate retryTemplate) {
-        this.retryTemplate = retryTemplate;
-    }
 
     @BeforeEach
     public void setUp() {

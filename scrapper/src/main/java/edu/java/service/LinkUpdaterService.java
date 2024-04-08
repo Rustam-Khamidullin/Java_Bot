@@ -64,10 +64,6 @@ public class LinkUpdaterService {
 
         Path path = Paths.get(url.getPath());
 
-        if (url.getHost() == null) {
-            return;
-        }
-
         if (url.getHost().equals("github.com") && path.getNameCount() == 2) {
             var repository = gitHubClient.getRepository(
                 path.getName(0).toString(),

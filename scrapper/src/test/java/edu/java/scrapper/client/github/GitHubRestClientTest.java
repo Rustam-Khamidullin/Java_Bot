@@ -18,18 +18,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest
 public class GitHubRestClientTest {
-    private final RetryTemplate retryTemplate;
+    @Autowired
+    private  RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
     static private GitHubRestClient gitHubRestClient;
 
-    @Autowired
-    public GitHubRestClientTest(RetryTemplate retryTemplate) {
-        this.retryTemplate = retryTemplate;
-    }
-
     @BeforeEach
     public void setUp() {
-        wireMockServer = new WireMockServer(35234);
+        wireMockServer = new WireMockServer(35235);
         wireMockServer.start();
 
         gitHubRestClient = new GitHubRestClient("http://localhost:" + wireMockServer.port(), retryTemplate);
