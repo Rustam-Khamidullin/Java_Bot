@@ -1,8 +1,7 @@
 package edu.java.bot.controller;
 
-import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.dto.api.request.LinkUpdateRequest;
-import edu.java.bot.service.Botik;
+import edu.java.bot.service.UpdateHandlerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class Api {
-    private final Botik botik;
+    private final UpdateHandlerService updateHandlerService;
 
     @PostMapping("/updates")
     public ResponseEntity<?> handleUpdate(@RequestBody @Valid LinkUpdateRequest linkUpdate) {
-        //todo move from here
-        botik.execute(new SendMessage(
-            linkUpdate.chatId(),
-            linkUpdate.description()
-        ));
-
+        updateHandlerService.handleUpdate(linkUpdate);
         return ResponseEntity.ok().build();
     }
 }

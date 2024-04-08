@@ -8,18 +8,25 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
-import edu.java.bot.service.command.Command;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Botik {
     private final TelegramBot bot;
+    private final UserMessageProcessor userMessageProcessor;
 
-    public Botik(ApplicationConfig config) {
+    @Autowired
+    public Botik(
+        ApplicationConfig config,
+        UserMessageProcessor userMessageProcessor,
+        BotCommand[] apiCommands
+    ) {
         String token = config.telegramToken();
 
         this.bot = new TelegramBot.Builder(token).debug().build();
-        bot.execute(new SetMyCommands(Command.getListApiCommands().toArray(new BotCommand[0])));
+        this.userMessageProcessor = userMessageProcessor;
+        bot.execute(new SetMyCommands(apiCommands));
     }
 
     public <T extends BaseRequest<T, R>, R extends BaseResponse> void execute(BaseRequest<T, R> request) {
@@ -33,7 +40,7 @@ public class Botik {
                     continue;
                 }
 
-                SendMessage sendMessage = UserMessageProcessor.process(update);
+                SendMessage sendMessage = userMessageProcessor.process(update);
                 bot.execute(sendMessage);
             }
             return UpdatesListener.CONFIRMED_UPDATES_ALL;

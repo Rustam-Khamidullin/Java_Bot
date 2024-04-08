@@ -4,13 +4,13 @@ import edu.java.client.BotClient;
 import edu.java.client.github.GitHubClient;
 import edu.java.client.stackoverflow.StackOverflowClient;
 import edu.java.configuration.ApplicationConfiguration;
-import edu.java.domain.LinkRepository;
 import edu.java.dto.bot.request.LinkUpdateRequest;
 import edu.java.dto.repository.Link;
 import edu.java.dto.stackoverflow.Questions;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -19,12 +19,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class LinkUpdaterService {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
-    private final LinkRepository linkRepository;
+    private final LinkUpdateCheckerService linkUpdateCheckerService;
     private final ApplicationConfiguration.Scheduler scheduler;
+
     private final GitHubClient gitHubClient;
     private final StackOverflowClient stackOverflowClient;
     private final BotClient botClient;
@@ -33,25 +35,33 @@ public class LinkUpdaterService {
     public void update() {
         logger.info("Links updating");
 
-        List<Link> linksToUpdate = linkRepository.findAll(scheduler.forceCheckDelay().toMillis());
+        List<Link> linksToUpdate = linkUpdateCheckerService.getUnupdatedLinks(
+            new Timestamp(System.currentTimeMillis() - scheduler.forceCheckDelay().toMillis())
+        );
 
-        for (var link : linksToUpdate) {
-            checkForUpdates(link);
+        if (linksToUpdate.isEmpty()) {
+            return;
         }
 
-        linkRepository.updateLinks(
-            linksToUpdate.stream()
-                .map(Link::linkId)
-                .toArray(Long[]::new)
-        );
+        for (var link : linksToUpdate) {
+            updateLink(link);
+        }
+
+        linkUpdateCheckerService.updateAllLinks(linksToUpdate);
     }
 
-    public void checkForUpdates(Link link) {
+    private void updateLink(Link link) {
+        logger.info("Updating " + link);
+
         // todo chain of responsibility maybe
 
         OffsetDateTime lastUpdate =
             OffsetDateTime.ofInstant(link.lastUpdate().toInstant(), ZoneOffset.UTC);
         URI url = link.url();
+        if (url.getHost() == null) {
+            return;
+        }
+
         Path path = Paths.get(url.getPath());
 
         if (url.getHost() == null) {

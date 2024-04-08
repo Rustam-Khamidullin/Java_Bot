@@ -15,7 +15,7 @@ import org.springframework.cache.annotation.EnableCaching;
 @RequiredArgsConstructor
 @EnableCaching
 public class BotApplication implements CommandLineRunner {
-    private final ApplicationConfig applicationConfig;
+    private final Botik botik;
 
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
@@ -23,8 +23,6 @@ public class BotApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Botik bot = new Botik(applicationConfig);
-
-        bot.start();
+        botik.start();
     }
 }

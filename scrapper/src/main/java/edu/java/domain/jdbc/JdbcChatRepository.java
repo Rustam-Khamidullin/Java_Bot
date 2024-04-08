@@ -1,6 +1,5 @@
 package edu.java.domain.jdbc;
 
-import edu.java.domain.ChatRepository;
 import edu.java.dto.repository.Chat;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -14,11 +13,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcChatRepository implements ChatRepository {
+public class JdbcChatRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Override
-    public Chat addOrGetExists(Long chatId) {
+    public Chat addOrGetExisting(Long chatId) {
         Chat existingLink = findByChatId(chatId);
 
         if (existingLink != null) {
@@ -44,7 +42,6 @@ public class JdbcChatRepository implements ChatRepository {
         );
     }
 
-    @Override
     public boolean remove(Long chatId) {
         return 1 == jdbcTemplate.update(
             "DELETE FROM chat WHERE id = ?",
@@ -52,7 +49,6 @@ public class JdbcChatRepository implements ChatRepository {
         );
     }
 
-    @Override
     public List<Chat> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM chat",
@@ -60,7 +56,6 @@ public class JdbcChatRepository implements ChatRepository {
         );
     }
 
-    @Override
     public Chat findByChatId(Long chatId) {
         try {
             return jdbcTemplate.queryForObject(

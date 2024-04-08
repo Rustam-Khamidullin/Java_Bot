@@ -2,7 +2,8 @@ app:
   scheduler:
     enable: true
     interval: 30000
-    force-check-delay: 30000
+    force-check-delay: 60000
+  database-access-type: jpa
 
 spring:
   application:
@@ -24,6 +25,12 @@ spring:
       - rate-limit-buckets
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    open-in-view: true
 
 api:
   bot:

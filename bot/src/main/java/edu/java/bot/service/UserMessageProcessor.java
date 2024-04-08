@@ -3,25 +3,18 @@ package edu.java.bot.service;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.command.Command;
-import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class UserMessageProcessor {
-    private static final Map<String, Command> NAME_TO_CMD = new HashMap<>();
-
-    static {
-        for (Command cmd : Command.availableCommands()) {
-            NAME_TO_CMD.put(cmd.command(), cmd);
-        }
-    }
-
-    private UserMessageProcessor() {
-    }
-
+    private final Map<String, Command> commands;
     private static final String COMMAND_NOT_FOUND = "Command not found. Use /help.";
     private static final String ARGUMENT_NOT_FOUND = "The command requires an argument";
 
-    public static SendMessage process(Update update) {
+    public SendMessage process(Update update) {
         String text = update.message().text();
         long chatId = update.message().chat().id();
 
@@ -29,21 +22,25 @@ public class UserMessageProcessor {
 
         String cmdName = commandArgument.command;
         String argument = commandArgument.argument;
-        Command command = NAME_TO_CMD.getOrDefault(cmdName, null);
+        Command command = commands.getOrDefault(cmdName, null);
 
         if (command == null) {
             return new SendMessage(chatId, COMMAND_NOT_FOUND);
         }
 
-        if (command.isArgumentNecessary() && argument == null) {
-            return new SendMessage(chatId, ARGUMENT_NOT_FOUND);
+        if (command.isArgumentNecessary()) {
+            if (argument == null) {
+                return new SendMessage(chatId, ARGUMENT_NOT_FOUND);
+            }
+            command.setArgument(argument);
+        } else {
+            command.setArgument(null);
         }
 
-        command.setArgument(argument);
         return command.handle(update);
     }
 
-    public static CommandArgument parseTelegramCommandArgument(String text) {
+    public CommandArgument parseTelegramCommandArgument(String text) {
         if (!text.startsWith("/")) {
             return new CommandArgument(null, null);
         }

@@ -27,18 +27,18 @@ public class JdbcLinkTest extends IntegrationTest {
     @Transactional
     @Rollback
     void simpleTest() {
-        chatRepository.addOrGetExists(1L);
-        chatRepository.addOrGetExists(2L);
-        chatRepository.addOrGetExists(3L);
-        chatRepository.addOrGetExists(3L);
+        chatRepository.addOrGetExisting(1L);
+        chatRepository.addOrGetExisting(2L);
+        chatRepository.addOrGetExisting(3L);
+        chatRepository.addOrGetExisting(3L);
 
-        linkRepository.addOrGetExists(1L, URI.create("a"));
-        linkRepository.addOrGetExists(1L, URI.create("a"));
-        linkRepository.addOrGetExists(1L, URI.create("b"));
-        linkRepository.addOrGetExists(1L, URI.create("c"));
-        linkRepository.addOrGetExists(1L, URI.create("d"));
-        linkRepository.addOrGetExists(2L, URI.create("c"));
-        linkRepository.addOrGetExists(3L, URI.create("d"));
+        linkRepository.addOrGetExisting(1L, URI.create("a"));
+        linkRepository.addOrGetExisting(1L, URI.create("a"));
+        linkRepository.addOrGetExisting(1L, URI.create("b"));
+        linkRepository.addOrGetExisting(1L, URI.create("c"));
+        linkRepository.addOrGetExisting(1L, URI.create("d"));
+        linkRepository.addOrGetExisting(2L, URI.create("c"));
+        linkRepository.addOrGetExisting(3L, URI.create("d"));
 
         var links = linkRepository.findAll();
 

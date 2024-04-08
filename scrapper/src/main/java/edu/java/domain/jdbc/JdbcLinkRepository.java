@@ -1,6 +1,5 @@
 package edu.java.domain.jdbc;
 
-import edu.java.domain.LinkRepository;
 import edu.java.dto.repository.Link;
 import java.net.URI;
 import java.sql.PreparedStatement;
@@ -15,11 +14,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class JdbcLinkRepository implements LinkRepository {
+public class JdbcLinkRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    @Override
-    public Link addOrGetExists(Long chatId, URI url) {
+    public Link addOrGetExisting(Long chatId, URI url) {
         Link existingLink = find(chatId, url);
 
         if (existingLink != null) {
@@ -46,12 +44,11 @@ public class JdbcLinkRepository implements LinkRepository {
         return new Link(
             (Long) keys.get("id_link"),
             url,
-            (Long) keys.get("id_chat"),
+            chatId,
             (Timestamp) keys.get("last_update")
         );
     }
 
-    @Override
     public Link remove(Long chatId, URI url) {
         Link link = find(chatId, url);
 
@@ -66,7 +63,6 @@ public class JdbcLinkRepository implements LinkRepository {
         return link;
     }
 
-    @Override
     public List<Link> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM link",
@@ -74,17 +70,14 @@ public class JdbcLinkRepository implements LinkRepository {
         );
     }
 
-    @Override
-    public List<Link> findAll(long millis) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis() - millis);
+    public List<Link> findAll(Timestamp before) {
         return jdbcTemplate.query(
-            "SELECT * FROM link WHERE last_update < ?",
+            "SELECT * FROM link WHERE last_update <= ?",
             Link::rowMap,
-            timestamp
+            before
         );
     }
 
-    @Override
     public List<Link> findAll(Long chatId) {
         return jdbcTemplate.query(
             "SELECT * FROM link "
@@ -94,7 +87,6 @@ public class JdbcLinkRepository implements LinkRepository {
         );
     }
 
-    @Override
     public Link find(Long chatId, URI url) {
         try {
             return jdbcTemplate.queryForObject(
@@ -108,7 +100,6 @@ public class JdbcLinkRepository implements LinkRepository {
         }
     }
 
-    @Override
     public void updateLinks(Long[] ids) {
         if (ids.length == 0) {
             return;

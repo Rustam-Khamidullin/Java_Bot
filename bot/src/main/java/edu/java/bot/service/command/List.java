@@ -2,9 +2,15 @@ package edu.java.bot.service.command;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import java.util.ArrayList;
+import edu.java.bot.service.ScrapperService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component("/list")
+@RequiredArgsConstructor
 public class List extends Command {
+    private final ScrapperService scrapperService;
+
     @Override
     public String command() {
         return "/list";
@@ -22,10 +28,8 @@ public class List extends Command {
 
     @Override
     public SendMessage handle(Update update) {
-        //list logic
-        java.util.List<String> links = new ArrayList<>();
-
         long chatId = update.message().chat().id();
+        java.util.List<String> links = scrapperService.getTrackingLink(chatId);
         String answer = generateAnswer(links);
 
         return new SendMessage(chatId, answer);

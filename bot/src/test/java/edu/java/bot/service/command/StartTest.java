@@ -1,27 +1,41 @@
 package edu.java.bot.service.command;
 
+import com.pengrad.telegrambot.model.Chat;
+import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.service.ScrapperService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Method;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
+
+@ExtendWith(MockitoExtension.class)
 public class StartTest {
+    @Mock
+    private Update mockedUpdate;
+
+    @Mock
+    private Message mockedMessage;
+
+    @Mock
+    private Chat mockedChat;
+
+    @Mock
+    private ScrapperService mockedScrapperService;
+
     @Test
-    void generateAnswerTest() {
-        try {
-            Method method = Start.class.getDeclaredMethod("generateAnswer", boolean.class);
-            method.setAccessible(true);
+    public void testHandleRegistersUser() {
+        when(mockedUpdate.message()).thenReturn(mockedMessage);
+        when(mockedMessage.chat()).thenReturn(mockedChat);
+        when(mockedChat.id()).thenReturn(1L);
+        doNothing().when(mockedScrapperService).register(1L);
 
-            Start start = new Start();
+        Start startCommand = new Start(mockedScrapperService);
 
-            String result = (String) method.invoke(start, true);
-            Assertions.assertEquals("The user has been successfully registered.", result);
-
-
-            result = (String) method.invoke(start, false);
-            Assertions.assertEquals("User registration failed.", result);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Assertions.assertDoesNotThrow(() -> startCommand.handle(mockedUpdate));
     }
 }
