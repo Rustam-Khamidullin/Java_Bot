@@ -10,7 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ApplicationConfig.class, KafkaConfiguration.class})
+@EnableConfigurationProperties({
+    ApplicationConfig.class,
+    KafkaConfiguration.class})
 @RequiredArgsConstructor
 public class BotApplication implements CommandLineRunner {
     private final Botik botik;

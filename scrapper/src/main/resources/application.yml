@@ -5,7 +5,11 @@ app:
     force-check-delay: 60000
   database-access-type: jpa
   useQueue: true
+
+kafka:
   updateTopicName: "Updates"
+  partitions: 1
+  replicas: 1
 
 spring:
   application:

@@ -1,6 +1,7 @@
 package edu.java;
 
 import edu.java.configuration.ApplicationConfiguration;
+import edu.java.configuration.KafkaConfiguration;
 import edu.java.configuration.client.BotClientConfiguration;
 import edu.java.configuration.client.GitHubClientConfiguration;
 import edu.java.configuration.client.StackOverflowConfiguration;
@@ -16,7 +17,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
     ApplicationConfiguration.class,
     GitHubClientConfiguration.class,
     StackOverflowConfiguration.class,
-    BotClientConfiguration.class})
+    BotClientConfiguration.class,
+    KafkaConfiguration.class})
 @EnableScheduling
 @EnableKafka
 @EnableJpaRepositories

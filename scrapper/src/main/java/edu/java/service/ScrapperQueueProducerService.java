@@ -12,7 +12,7 @@ public class ScrapperQueueProducerService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${app.updateTopicName}")
+    @Value("${kafka.updateTopicName}")
     private String topicName;
 
     public ScrapperQueueProducerService(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {

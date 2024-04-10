@@ -1,8 +1,10 @@
 bot:
   telegramToken: ${BOT_TOKEN:token}
 
-kafka-configuration:
+kafka:
   updateTopicName: "Updates"
+  partitions: 1
+  replicas: 1
 
 spring:
   application:
