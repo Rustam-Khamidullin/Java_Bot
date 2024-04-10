@@ -16,14 +16,28 @@ spring:
   liquibase:
     enabled: false
     drop-first: false
-    change-log:  migrations/master.xml
+    change-log: migrations/master.xml
     default-schema: public
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: true
     open-in-view: true
+
+management:
+  server:
+    port: 8081
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      base-path: "/"
+      exposure:
+        include: "info, health, prometheus"
+      path-mapping:
+        prometheus: "metrics"
 
 api:
   bot:
