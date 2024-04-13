@@ -18,15 +18,10 @@ spring:
     drop-first: false
     change-log: migrations/master.xml
     default-schema: public
-  cache:
-    jcache:
-      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
-    caffeine:
-      spec: maximumSize=100000,expireAfterAccess=3600s
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: true
     open-in-view: true
 
@@ -55,14 +50,7 @@ retry:
     - 404
     - 500
 
-bucket4j:
-  enabled: true
-  filters:
-    - cache-name: rate-limit-buckets
-      url: .*
-      rate-limits:
-        - cache-key: getRemoteAddr()
-          bandwidths:
-            - capacity: 3
-              time: 10
-              unit: minutes
+bucket:
+  capacity: 3
+  refillAmount: 3
+  refillTime: 10s
