@@ -31,6 +31,7 @@ public record RetryConfiguration(
 
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(retryPolicy);
+
         switch (strategy) {
             case "const" -> {
                 FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();

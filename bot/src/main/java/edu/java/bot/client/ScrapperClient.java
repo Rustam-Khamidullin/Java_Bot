@@ -29,28 +29,52 @@ public class ScrapperClient {
     }
 
     public void registerChat(long id) {
-        retryTemplate.execute(retryContext -> restClient.post()
+        restClient.post()
             .uri(TG_CHAT_URL.formatted(id))
-            .retrieve());
+            .retrieve();
+    }
+
+    public void registerChatRetry(long id) {
+        retryTemplate.execute(
+            retryContext -> {
+                registerChat(id);
+                return null;
+            }
+        );
     }
 
     public void deleteChat(long id) {
-        retryTemplate.execute(retryContext -> restClient.delete()
+        restClient.delete()
             .uri(TG_CHAT_URL.formatted(id))
-            .retrieve());
+            .retrieve();
+    }
+
+    public void deleteChatRetry(long id) {
+        retryTemplate.execute(
+            retryContext -> {
+                deleteChat(id);
+                return null;
+            }
+        );
     }
 
     public ListLinksResponse getAllLinks(long tgChatId) {
-        return retryTemplate.execute(retryContext -> restClient.get()
+        return restClient.get()
             .uri(LINKS_URL)
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .retrieve()
-            .body(ListLinksResponse.class));
+            .body(ListLinksResponse.class);
+    }
+
+    public ListLinksResponse getAllLinksRetry(long id) {
+        return retryTemplate.execute(
+            retryContext -> getAllLinks(id)
+        );
     }
 
     public LinkResponse addLink(long tgChatId, AddLinkRequest addLinkRequest)
         throws IllegalArgumentException {
-        return retryTemplate.execute(retryContext -> restClient.post()
+        return restClient.post()
             .uri(LINKS_URL)
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(addLinkRequest)
@@ -58,12 +82,18 @@ public class ScrapperClient {
             .onStatus(status -> status == HttpStatus.BAD_REQUEST, (request, response) -> {
                 throw new IllegalArgumentException(INCORRECT_URL);
             })
-            .body(LinkResponse.class));
+            .body(LinkResponse.class);
+    }
+
+    public LinkResponse addLinkRetry(long tgChatId, AddLinkRequest addLinkRequest) {
+        return retryTemplate.execute(
+            retryContext -> addLink(tgChatId, addLinkRequest)
+        );
     }
 
     public LinkResponse removeLink(long tgChatId, RemoveLinkRequest removeLinkRequest)
         throws IllegalArgumentException {
-        return retryTemplate.execute(retryContext -> restClient.method(HttpMethod.DELETE)
+        return restClient.method(HttpMethod.DELETE)
             .uri(LINKS_URL)
             .header(TG_CHAT_ID_HEADER, String.valueOf(tgChatId))
             .body(removeLinkRequest)
@@ -74,6 +104,12 @@ public class ScrapperClient {
             .onStatus(status -> status == HttpStatus.NOT_FOUND, (request, response) -> {
                 throw new IllegalArgumentException("There is no such link");
             })
-            .body(LinkResponse.class));
+            .body(LinkResponse.class);
+    }
+
+    public LinkResponse removeLinkRetry(long tgChatId, RemoveLinkRequest removeLinkRequest) {
+        return retryTemplate.execute(
+            retryContext -> removeLink(tgChatId, removeLinkRequest)
+        );
     }
 }

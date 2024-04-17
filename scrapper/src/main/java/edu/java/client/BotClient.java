@@ -18,12 +18,16 @@ public class BotClient {
     }
 
     public ResponseEntity<?> sendUpdate(LinkUpdateRequest request) {
+        return restClient.post()
+            .uri("/updates")
+            .body(request)
+            .retrieve()
+            .toBodilessEntity();
+    }
+
+    public ResponseEntity<?> sendUpdateRetry(LinkUpdateRequest request) {
         return retryTemplate.execute(
-            retryContext -> restClient.post()
-                .uri("/updates")
-                .body(request)
-                .retrieve()
-                .toBodilessEntity()
+            retryContext -> sendUpdate(request)
         );
     }
 }

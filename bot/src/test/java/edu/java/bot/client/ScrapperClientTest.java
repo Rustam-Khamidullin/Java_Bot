@@ -8,6 +8,7 @@ import edu.java.bot.dto.scrapper.response.ListLinksResponse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -24,7 +26,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-@SpringBootTest
+@SpringBootTest(
+    properties = {"retry.max-attempt=3", "retry.retryableStatusCodes[0]=404"}
+)
 class ScrapperClientTest {
     private final RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
@@ -131,5 +135,55 @@ class ScrapperClientTest {
         LinkResponse response = scrapperClient.removeLink(654, removeLinkRequest);
 
         Assertions.assertEquals(response, linkResponse);
+    }
+
+    @Test
+    public void retryableCode() {
+        long id = 1234;
+
+        wireMockServer.stubFor(get(urlEqualTo("/links"))
+            .withHeader("Content-Type", equalTo("application/json"))
+            .withHeader("Tg-Chat-Id", equalTo(String.valueOf(id)))
+            .willReturn(aResponse()
+                .withStatus(404)
+                .withBody("Mocked Response")));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        Assertions.assertThrows(
+            HttpClientErrorException.class,
+            () -> retryTemplate.execute(
+                context -> {
+                    counter.incrementAndGet();
+                    scrapperClient.getAllLinks(id);
+                    return null;
+                }
+            )
+        );
+        Assertions.assertEquals(counter.get(), 3);
+    }
+
+    @Test
+    public void notRetryableCode() {
+        long id = 1234;
+
+        wireMockServer.stubFor(get(urlEqualTo("/links"))
+            .withHeader("Content-Type", equalTo("application/json"))
+            .withHeader("Tg-Chat-Id", equalTo(String.valueOf(id)))
+            .willReturn(aResponse()
+                .withStatus(403)
+                .withBody("Mocked Response")));
+
+        AtomicInteger counter = new AtomicInteger(0);
+        Assertions.assertThrows(
+            HttpClientErrorException.class,
+            () -> retryTemplate.execute(
+                context -> {
+                    counter.incrementAndGet();
+                    scrapperClient.getAllLinks(id);
+                    return null;
+                }
+            )
+        );
+        Assertions.assertEquals(counter.get(), 1);
     }
 }

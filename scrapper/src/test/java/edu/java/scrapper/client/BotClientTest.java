@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import edu.java.client.BotClient;
 import edu.java.dto.bot.request.LinkUpdateRequest;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
-@SpringBootTest
+@SpringBootTest(
+    properties = {"retry.max-attempt=3", "retry.retryableStatusCodes[0]=404"}
+)
 public class BotClientTest {
     @Autowired
     private RetryTemplate retryTemplate;
@@ -71,8 +74,18 @@ public class BotClientTest {
             "description"
         );
 
-        // 4 times
-        Assertions.assertThrows(HttpClientErrorException.class, () -> botClient.sendUpdate(request));
+        AtomicInteger counter = new AtomicInteger(0);
+        Assertions.assertThrows(
+            HttpClientErrorException.class,
+            () -> retryTemplate.execute(
+                context -> {
+                    counter.incrementAndGet();
+                    botClient.sendUpdate(request);
+                    return null;
+                }
+            )
+        );
+        Assertions.assertEquals(counter.get(), 3);
     }
 
     @Test
@@ -89,7 +102,17 @@ public class BotClientTest {
             "description"
         );
 
-        // Once
-        Assertions.assertThrows(HttpClientErrorException.class, () -> botClient.sendUpdate(request));
+        AtomicInteger counter = new AtomicInteger(0);
+        Assertions.assertThrows(
+            HttpClientErrorException.class,
+            () -> retryTemplate.execute(
+                context -> {
+                    counter.incrementAndGet();
+                    botClient.sendUpdate(request);
+                    return null;
+                }
+            )
+        );
+        Assertions.assertEquals(counter.get(), 1);
     }
 }
