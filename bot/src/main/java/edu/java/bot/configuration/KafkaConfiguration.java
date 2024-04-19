@@ -42,19 +42,4 @@ public class KafkaConfiguration {
             .replicas(replicas)
             .build();
     }
-
-    @KafkaListener(topics = "${kafka.updateTopicName}")
-    public void listen(String request) {
-        try {
-            LinkUpdateRequest update = objectMapper.readValue(request, LinkUpdateRequest.class);
-
-            updateHandlerService.handleUpdate(update);
-        } catch (Exception e) {
-            sendDlqUpdate(request);
-        }
-    }
-
-    public void sendDlqUpdate(String unhandledRequest) {
-        kafkaTemplate.send(updateTopicName + dlqSuffix, unhandledRequest);
-    }
 }
