@@ -5,6 +5,7 @@ import edu.java.domain.jdbc.JdbcLinkRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import javax.sql.DataSource;
 import java.net.URI;
 import java.util.Set;
 
+@SpringBootTest
 public class JdbcLinkTest extends IntegrationTest {
     private final DataSource dataSource =
         DataSourceBuilder.create()
