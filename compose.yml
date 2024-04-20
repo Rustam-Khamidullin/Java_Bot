@@ -28,6 +28,34 @@ services:
     networks:
       - backend
 
+  bot:
+    build:
+      context: ./bot
+      dockerfile: ./bot.Dockerfile
+    depends_on:
+      - scrapper
+    ports:
+      - "8090:8090"
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      SCRAPPER_BASE_URL: http://scrapper:8080
+    networks:
+      - backend
+
+  scrapper:
+    build:
+      context: ./scrapper
+      dockerfile: ./scrapper.Dockerfile
+    depends_on:
+      - postgresql
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgresql:5432/scrapper
+      BOT_BASE_URL: http://bot:8090
+    networks:
+      - backend
+
 volumes:
   postgresql: { }
 

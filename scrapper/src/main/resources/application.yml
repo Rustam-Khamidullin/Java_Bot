@@ -9,14 +9,14 @@ spring:
   application:
     name: scrapper
   datasource:
-    url: jdbc:postgresql://localhost:5432/scrapper
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/scrapper}
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
   liquibase:
     enabled: false
     drop-first: false
-    change-log:  migrations/master.xml
+    change-log: migrations/master.xml
     default-schema: public
   jpa:
     properties:
