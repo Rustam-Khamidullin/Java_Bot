@@ -1,6 +1,6 @@
-package edu.java.component.filter;
+package edu.java.component.metric.filter;
 
-import edu.java.component.HandledCounter;
+import edu.java.component.metric.HandledCounter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

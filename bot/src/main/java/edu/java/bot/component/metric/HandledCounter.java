@@ -1,4 +1,4 @@
-package edu.java.component;
+package edu.java.bot.component.metric;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
