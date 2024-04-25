@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import java.net.URI;
 import java.util.Set;
 
-@SpringBootTest
 public class JdbcLinkTest extends IntegrationTest {
     private final DataSource dataSource =
         DataSourceBuilder.create()

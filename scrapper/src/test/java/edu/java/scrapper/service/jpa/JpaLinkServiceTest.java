@@ -7,6 +7,7 @@ import edu.java.scrapper.IntegrationTest;
 import edu.java.service.jpa.JpaLinkService;
 import java.net.URI;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,13 @@ public class JpaLinkServiceTest extends IntegrationTest {
     @Autowired
     private JpaChatRepository jpaChatRepository;
 
+    @AfterEach
+    void cleanUp() {
+        jpaChatRepository.deleteAll();
+        jpaLinkRepository.deleteAll();
+    }
+
     @Transactional
-    @Rollback
     @Test
     public void testAdd() {
         JpaLinkService linkService = new JpaLinkService(jpaLinkRepository, jpaChatRepository);
@@ -40,7 +46,6 @@ public class JpaLinkServiceTest extends IntegrationTest {
     }
 
     @Transactional
-    @Rollback
     @Test
     public void testRemove() {
         JpaLinkService linkService = new JpaLinkService(jpaLinkRepository, jpaChatRepository);
@@ -60,7 +65,6 @@ public class JpaLinkServiceTest extends IntegrationTest {
     }
 
     @Transactional
-    @Rollback
     @Test
     public void testListAll() {
         JpaLinkService linkService = new JpaLinkService(jpaLinkRepository, jpaChatRepository);

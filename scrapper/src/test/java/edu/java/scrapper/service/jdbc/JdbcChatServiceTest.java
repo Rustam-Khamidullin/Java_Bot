@@ -4,6 +4,7 @@ import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.dto.repository.Chat;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.jdbc.JdbcChatService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,14 @@ public class JdbcChatServiceTest extends IntegrationTest {
     @Autowired
     private JdbcChatRepository jdbcChatRepository;
 
+    @AfterEach
+    void cleanUp() {
+        for (var m : jdbcChatRepository.findAll()) {
+            jdbcChatRepository.remove(m.chatId());
+        }
+    }
+
     @Transactional
-    @Rollback
     @Test
     public void testRegister() {
         JdbcChatService chatService = new JdbcChatService(jdbcChatRepository);
@@ -38,7 +45,6 @@ public class JdbcChatServiceTest extends IntegrationTest {
     }
 
     @Transactional
-    @Rollback
     @Test
     public void testUnregister() {
         JdbcChatService chatService = new JdbcChatService(jdbcChatRepository);
