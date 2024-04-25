@@ -4,26 +4,22 @@ import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.domain.jdbc.JdbcLinkRepository;
 import java.net.URI;
 import java.util.Set;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+@SpringBootTest
 public class JdbcLinkTest extends IntegrationTest {
-    private final DataSource dataSource =
-        DataSourceBuilder.create()
-            .url(POSTGRES.getJdbcUrl())
-            .username(POSTGRES.getUsername())
-            .password(POSTGRES.getPassword())
-            .build();
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-    private final JdbcLinkRepository linkRepository = new JdbcLinkRepository(jdbcTemplate);
-    private final JdbcChatRepository chatRepository = new JdbcChatRepository(jdbcTemplate);
+    @Autowired
+    private JdbcLinkRepository linkRepository;
+    @Autowired
+    private JdbcChatRepository chatRepository;
 
-    @AfterEach
+    @BeforeEach @AfterEach
     void cleanUp() {
         for (var m : chatRepository.findAll()) {
             chatRepository.remove(m.chatId());
@@ -32,6 +28,8 @@ public class JdbcLinkTest extends IntegrationTest {
             linkRepository.remove(m.chatId(), m.url());
         }
     }
+
+
 
     @Test
     @Transactional
