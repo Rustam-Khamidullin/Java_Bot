@@ -2,6 +2,7 @@ package edu.java.bot.service;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.component.metric.HandledMessages;
 import edu.java.bot.service.command.Command;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserMessageProcessor {
-    private final Map<String, Command> commands;
     private static final String COMMAND_NOT_FOUND = "Command not found. Use /help.";
     private static final String ARGUMENT_NOT_FOUND = "The command requires an argument";
+    private final Map<String, Command> commands;
+    private final HandledMessages handledMessages;
 
     public SendMessage process(Update update) {
+        handledMessages.incrementCounter();
+
         String text = update.message().text();
         long chatId = update.message().chat().id();
 

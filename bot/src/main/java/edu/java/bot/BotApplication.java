@@ -1,6 +1,8 @@
 package edu.java.bot;
 
 import edu.java.bot.configuration.ApplicationConfig;
+import edu.java.bot.configuration.KafkaConfiguration;
+import edu.java.bot.configuration.retry.RetryConfiguration;
 import edu.java.bot.service.Botik;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -9,7 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(ApplicationConfig.class)
+@EnableConfigurationProperties({
+    ApplicationConfig.class,
+    KafkaConfiguration.class,
+    RetryConfiguration.class})
 @RequiredArgsConstructor
 public class BotApplication implements CommandLineRunner {
     private final Botik botik;

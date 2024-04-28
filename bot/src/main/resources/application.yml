@@ -1,11 +1,36 @@
 bot:
   telegramToken: ${BOT_TOKEN:token}
 
+kafka:
+  updateTopicName: "Updates"
+  dlqSuffix: "_dlq"
+  partitions: 1
+  replicas: 1
+
 spring:
   application:
     name: bot
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: "bot"
   jackson:
     time-zone: UTC
+
+management:
+  server:
+    port: 8091
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      base-path: "/"
+      exposure:
+        include: "info, health, prometheus"
+      path-mapping:
+        prometheus: "metrics"
 
 api:
   scrapper:
@@ -16,3 +41,19 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+retry:
+  # const, line, exp
+  strategy: line
+  maxAttempt: 3
+  delay: 1000
+  multiplier: 2
+  retryableStatusCodes:
+    - 400
+    - 404
+    - 500
+
+bucket:
+  capacity: 3
+  refillAmount: 3
+  refillTime: 10s
