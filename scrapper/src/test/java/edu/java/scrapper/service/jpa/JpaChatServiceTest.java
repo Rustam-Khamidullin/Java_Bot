@@ -4,6 +4,7 @@ import edu.java.domain.jpa.JpaChatRepository;
 import edu.java.dto.repository.Chat;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.jpa.JpaChatService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,12 @@ public class JpaChatServiceTest extends IntegrationTest {
     @Autowired
     private JpaChatRepository jpaChatRepository;
 
+    @AfterEach
+    void cleanUp() {
+        jpaChatRepository.deleteAll();
+    }
+
     @Transactional
-    @Rollback
     @Test
     public void testRegister() {
         JpaChatService chatService = new JpaChatService(jpaChatRepository);
@@ -38,7 +43,6 @@ public class JpaChatServiceTest extends IntegrationTest {
     }
 
     @Transactional
-    @Rollback
     @Test
     public void testUnregister() {
         JpaChatService chatService = new JpaChatService(jpaChatRepository);

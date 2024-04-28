@@ -2,37 +2,43 @@ package edu.java.scrapper;
 
 import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.domain.jdbc.JdbcLinkRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
-import javax.sql.DataSource;
 import java.net.URI;
 import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
+@SpringBootTest
 public class JdbcLinkTest extends IntegrationTest {
-    private final DataSource dataSource =
-        DataSourceBuilder.create()
-            .url(POSTGRES.getJdbcUrl())
-            .username(POSTGRES.getUsername())
-            .password(POSTGRES.getPassword())
-            .build();
-    private final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-    private final JdbcLinkRepository linkRepository = new JdbcLinkRepository(jdbcTemplate);
-    private final JdbcChatRepository chatRepository = new JdbcChatRepository(jdbcTemplate);
+    @Autowired
+    private JdbcLinkRepository linkRepository;
+    @Autowired
+    private JdbcChatRepository chatRepository;
+
+    @BeforeEach @AfterEach
+    void cleanUp() {
+        for (var m : chatRepository.findAll()) {
+            chatRepository.remove(m.chatId());
+        }
+        for (var m : linkRepository.findAll()) {
+            linkRepository.remove(m.chatId(), m.url());
+        }
+    }
+
+
 
     @Test
     @Transactional
-    @Rollback
     void simpleTest() {
         chatRepository.addOrGetExisting(1L);
         chatRepository.addOrGetExisting(2L);
         chatRepository.addOrGetExisting(3L);
         chatRepository.addOrGetExisting(3L);
 
-        linkRepository.addOrGetExisting(1L, URI.create("a"));
         linkRepository.addOrGetExisting(1L, URI.create("a"));
         linkRepository.addOrGetExisting(1L, URI.create("b"));
         linkRepository.addOrGetExisting(1L, URI.create("c"));

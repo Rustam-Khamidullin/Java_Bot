@@ -5,14 +5,13 @@ import edu.java.domain.jdbc.JdbcLinkRepository;
 import edu.java.dto.repository.Link;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.jdbc.JdbcLinkService;
-import edu.java.service.jpa.JpaLinkService;
 import java.net.URI;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -22,8 +21,17 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @Autowired
     private JdbcChatRepository jdbcChatRepository;
 
+    @AfterEach
+    void cleanUp() {
+        for (var m : jdbcChatRepository.findAll()) {
+            jdbcChatRepository.remove(m.chatId());
+        }
+        for (var m : jdbcLinkRepository.findAll()) {
+            jdbcLinkRepository.remove(m.chatId(), m.url());
+        }
+    }
+
     @Transactional
-    @Rollback
     @Test
     public void testAdd() {
         JdbcLinkService linkService = new JdbcLinkService(jdbcLinkRepository, jdbcChatRepository);
@@ -41,7 +49,6 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     }
 
     @Transactional
-    @Rollback
     @Test
     public void testRemove() {
         JdbcLinkService linkService = new JdbcLinkService(jdbcLinkRepository, jdbcChatRepository);
@@ -61,7 +68,6 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     }
 
     @Transactional
-    @Rollback
     @Test
     public void testListAll() {
         JdbcLinkService linkService = new JdbcLinkService(jdbcLinkRepository, jdbcChatRepository);
