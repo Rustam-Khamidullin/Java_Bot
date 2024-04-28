@@ -36,6 +36,20 @@ spring:
         format_sql: true
     open-in-view: true
 
+management:
+  server:
+    port: 8081
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      base-path: "/"
+      exposure:
+        include: "info, health, prometheus"
+      path-mapping:
+        prometheus: "metrics"
+
 api:
   bot:
     baseUrl: ${BOT_BASE_URL:http://localhost:8090}
