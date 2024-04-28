@@ -1,5 +1,6 @@
 package edu.java.bot.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.model.BotCommand;
 import edu.java.bot.configuration.ratelimit.BucketConfiguration;
 import edu.java.bot.service.command.Command;
@@ -19,8 +20,16 @@ import org.springframework.validation.annotation.Validated;
 @EnableConfigurationProperties(BucketConfiguration.class)
 public record ApplicationConfig(
     @NotEmpty
-    String telegramToken
+    String telegramToken,
+    String updateTopicName,
+    int partitions,
+    int replicas
 ) {
+    @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
     @Bean
     @Lazy
     Map<String, Command> commands() {
