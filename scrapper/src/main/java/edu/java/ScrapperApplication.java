@@ -5,6 +5,7 @@ import edu.java.configuration.KafkaConfiguration;
 import edu.java.configuration.client.BotClientConfiguration;
 import edu.java.configuration.client.GitHubClientConfiguration;
 import edu.java.configuration.client.StackOverflowConfiguration;
+import edu.java.configuration.retry.RetryConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableConfigurationProperties({
     ApplicationConfiguration.class,
+    RetryConfiguration.class,
     GitHubClientConfiguration.class,
     StackOverflowConfiguration.class,
     BotClientConfiguration.class,

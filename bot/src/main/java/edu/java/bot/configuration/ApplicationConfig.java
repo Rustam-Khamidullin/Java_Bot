@@ -2,11 +2,13 @@ package edu.java.bot.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.model.BotCommand;
+import edu.java.bot.configuration.ratelimit.BucketConfiguration;
 import edu.java.bot.service.command.Command;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "bot", ignoreUnknownFields = false)
+@EnableConfigurationProperties(BucketConfiguration.class)
 public record ApplicationConfig(
     @NotEmpty
     String telegramToken,
