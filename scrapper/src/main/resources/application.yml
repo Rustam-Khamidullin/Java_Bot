@@ -16,12 +16,12 @@ spring:
   liquibase:
     enabled: false
     drop-first: false
-    change-log:  migrations/master.xml
+    change-log: migrations/master.xml
     default-schema: public
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: true
     open-in-view: true
 
@@ -38,3 +38,19 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+retry:
+  # const, line, exp
+  strategy: line
+  maxAttempt: 4
+  delay: 1000
+  multiplier: 2
+  retryableStatusCodes:
+    - 400
+    - 404
+    - 500
+
+bucket:
+  capacity: 3
+  refillAmount: 3
+  refillTime: 10s
