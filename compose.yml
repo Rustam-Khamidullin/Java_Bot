@@ -27,7 +27,7 @@ services:
       - ./migrations:/liquibase/changelog
     networks:
       - backend
-
+      
   prometheus:
     image: prom/prometheus
     container_name: "Prometheus"
@@ -43,9 +43,33 @@ services:
     container_name: "Grafana"
     ports:
       - "3000:3000"
+      
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+    volumes:
+      - kafka_data:/var/lib/kafka/data
 
 volumes:
   postgresql: { }
+  kafka_data: { }
 
 networks:
   backend: { }

@@ -4,10 +4,21 @@ app:
     interval: 30000
     force-check-delay: 60000
   database-access-type: jpa
+  useQueue: true
+
+kafka:
+  updateTopicName: "Updates"
+  partitions: 1
+  replicas: 1
 
 spring:
   application:
     name: scrapper
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
     url: jdbc:postgresql://localhost:5432/scrapper
     driver-class-name: org.postgresql.Driver
@@ -52,3 +63,19 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+retry:
+  # const, line, exp
+  strategy: line
+  maxAttempt: 4
+  delay: 1000
+  multiplier: 2
+  retryableStatusCodes:
+    - 400
+    - 404
+    - 500
+
+bucket:
+  capacity: 3
+  refillAmount: 3
+  refillTime: 10s

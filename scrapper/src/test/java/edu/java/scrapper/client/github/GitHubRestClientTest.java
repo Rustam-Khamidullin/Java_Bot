@@ -3,27 +3,32 @@ package edu.java.scrapper.client.github;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import edu.java.client.github.GitHubRestClient;
 import edu.java.dto.github.Repository;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.HttpClientErrorException;
-import java.time.OffsetDateTime;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
+@SpringBootTest
 public class GitHubRestClientTest {
+    @Autowired
+    private  RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
     static private GitHubRestClient gitHubRestClient;
 
     @BeforeEach
     public void setUp() {
-        wireMockServer = new WireMockServer(35234);
+        wireMockServer = new WireMockServer(35235);
         wireMockServer.start();
 
-        gitHubRestClient = new GitHubRestClient("http://localhost:" + wireMockServer.port());
+        gitHubRestClient = new GitHubRestClient("http://localhost:" + wireMockServer.port(), retryTemplate);
     }
 
     @AfterEach
