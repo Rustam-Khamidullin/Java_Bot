@@ -7,6 +7,7 @@ import edu.java.dto.stackoverflow.Questions;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest
-public class StackOverflowRestClientTest {
+public class StackOverflowRestClientTest extends IntegrationTest {
     @Autowired
     private RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;

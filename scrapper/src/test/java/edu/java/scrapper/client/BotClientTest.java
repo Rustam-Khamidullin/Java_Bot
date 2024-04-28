@@ -5,6 +5,7 @@ import edu.java.client.BotClient;
 import edu.java.dto.bot.request.LinkUpdateRequest;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
+import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @SpringBootTest(
     properties = {"retry.max-attempt=3", "retry.retryableStatusCodes[0]=404"}
 )
-public class BotClientTest {
+public class BotClientTest extends IntegrationTest {
     @Autowired
     private RetryTemplate retryTemplate;
     private static WireMockServer wireMockServer;

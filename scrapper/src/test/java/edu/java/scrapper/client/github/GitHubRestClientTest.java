@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import edu.java.client.github.GitHubRestClient;
 import edu.java.dto.github.Repository;
 import java.time.OffsetDateTime;
+import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 @SpringBootTest
-public class GitHubRestClientTest {
+public class GitHubRestClientTest extends IntegrationTest {
     @Autowired
     private  RetryTemplate retryTemplate;
     static private WireMockServer wireMockServer;
